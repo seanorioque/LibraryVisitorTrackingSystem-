@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth"; // ✅ add signOut
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ConstellationAnimation } from "./LoginAnimation";
 import Logo from "../../components/newEraLogo.png";
+
+const ALLOWED_DOMAIN = "neu.edu.ph"; // ✅ your institutional domain
 
 const Login = () => {
   const auth = getAuth();
@@ -16,7 +18,22 @@ const Login = () => {
     setError("");
     try {
       const provider = new GoogleAuthProvider();
+
+      // ✅ Force Google to show the account picker every time
+      provider.setCustomParameters({ prompt: "select_account" });
+
       const response = await signInWithPopup(auth, provider);
+      const email = response.user.email ?? "";
+      const domain = email.split("@")[1];
+
+      if (domain !== ALLOWED_DOMAIN) {
+        // ✅ Immediately sign them out before they get any access
+        await signOut(auth);
+        setError(`Access denied. Please use your @${ALLOWED_DOMAIN} account.`);
+        setAuthing(false);
+        return;
+      }
+
       console.log("User UID:", response.user.uid);
       navigate("/");
     } catch (err) {
@@ -28,23 +45,19 @@ const Login = () => {
 
   return (
     <div className="w-full h-screen relative overflow-hidden">
-      {/* Constellation fills entire background */}
       <div className="absolute inset-0 z-0">
         <ConstellationAnimation />
       </div>
 
-      {/* Centered card overlay */}
-      <div className="absolute inset-0 z-10 flex items-center justify-center p-4">
+      <div className="absolute inset-0 z-10 flex items-center justify-center p-4 pointer-events-none">
         <motion.div
           initial={{ opacity: 0, y: 28, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="relative flex flex-col items-center w-full max-w-sm px-10 py-12 rounded-3xl border border-white/[0.08] bg-[#282c34]/60 backdrop-blur-2xl shadow-2xl"
+          className="pointer-events-auto relative flex flex-col items-center w-full max-w-sm px-10 py-12 rounded-3xl border border-white/[0.08] bg-[#282c34]/60 backdrop-blur-2xl shadow-2xl"
         >
-          {/* Top accent line */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-px bg-gradient-to-r from-transparent via-blue-300/50 to-transparent rounded-full" />
 
-          {/* Logo */}
           <motion.img
             src={Logo}
             alt="New Era University Library"
@@ -56,10 +69,8 @@ const Login = () => {
             className="h-14 w-auto mb-8 cursor-pointer drop-shadow-lg"
           />
 
-          {/* Divider */}
           <div className="w-full h-px mb-8 bg-gradient-to-r from-transparent via-blue-300/20 to-transparent" />
 
-          {/* Heading */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -80,7 +91,7 @@ const Login = () => {
             </p>
           </motion.div>
 
-          {/* Error */}
+          {/* ✅ Error message */}
           {error && (
             <motion.div
               initial={{ opacity: 0 }}
@@ -91,7 +102,6 @@ const Login = () => {
             </motion.div>
           )}
 
-          {/* Sign in button */}
           <motion.button
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -116,22 +126,19 @@ const Login = () => {
             )}
           </motion.button>
 
-          {/* Footer hint */}
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7, duration: 0.8 }}
             className="mt-6 text-[10px] font-mono tracking-[0.14em] text-blue-300/25 text-center uppercase"
           >
-            Use your university credentials to access
+            Only @neu.edu.ph accounts are allowed
           </motion.p>
 
-          {/* Bottom accent line */}
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-28 h-px bg-gradient-to-r from-transparent via-purple-300/30 to-transparent rounded-full" />
         </motion.div>
       </div>
 
-      {/* Bottom watermark */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
