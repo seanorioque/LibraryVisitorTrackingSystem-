@@ -1,11 +1,9 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 
 const NUM_PARTICLES = 38;
 const CONNECTION_DIST = 130;
 const REPEL_DIST = 80;
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function randomBetween(a: number, b: number) {
   return a + Math.random() * (b - a);
@@ -23,14 +21,15 @@ function initParticles(w: number, h: number) {
     hue: randomBetween(180, 260),
   }));
 }
+
+type Flash = { x: number; y: number; age: number; life: number; maxR: number };
+
 export function ConstellationAnimation() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<ReturnType<typeof initParticles>>([]);
   const mouseRef = useRef({ x: -9999, y: -9999 });
   const rafRef = useRef<number>(0);
-  const clickFlashRef = useRef<
-    { x: number; y: number; age: number; life: number; maxR: number }[]
-  >([]);
+  const clickFlashRef = useRef<Flash[]>([]); // ✅ fixed — was missing the generic bracket
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -56,7 +55,6 @@ export function ConstellationAnimation() {
       const my = mouseRef.current.y;
       const pts = particlesRef.current;
 
-      // Update particles
       for (const p of pts) {
         p.pulse += 0.04;
         p.x += p.vx;
@@ -86,7 +84,6 @@ export function ConstellationAnimation() {
         }
       }
 
-      // Draw connections
       for (let i = 0; i < pts.length; i++) {
         for (let j = i + 1; j < pts.length; j++) {
           const dx = pts[i].x - pts[j].x;
@@ -105,8 +102,8 @@ export function ConstellationAnimation() {
         }
       }
 
-      // Click flashes
-      clickFlashRef.current = clickFlashRef.current.filter((f) => {
+      // ✅ fixed — f is now typed via the Flash type above
+      clickFlashRef.current = clickFlashRef.current.filter((f: Flash) => {
         f.age += 1;
         const progress = f.age / f.life;
         if (progress >= 1) return false;
@@ -124,7 +121,6 @@ export function ConstellationAnimation() {
         return true;
       });
 
-      // Draw particles
       for (const p of pts) {
         const pulse = 0.7 + Math.sin(p.pulse) * 0.3;
         const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 4);
@@ -141,7 +137,6 @@ export function ConstellationAnimation() {
         ctx.fill();
       }
 
-      // Mouse aura
       if (mx > 0 && mx < W) {
         const aura = ctx.createRadialGradient(mx, my, 0, mx, my, REPEL_DIST);
         aura.addColorStop(0, "hsla(200, 100%, 80%, 0.06)");
@@ -164,7 +159,7 @@ export function ConstellationAnimation() {
   }, []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    const rect = canvasRef.current!.getBoundingClientRect();
+    const rect = containerRef.current!.getBoundingClientRect();
     mouseRef.current.x = e.clientX - rect.left;
     mouseRef.current.y = e.clientY - rect.top;
   }, []);
@@ -175,7 +170,7 @@ export function ConstellationAnimation() {
   }, []);
 
   const handleClick = useCallback((e: React.MouseEvent) => {
-    const rect = canvasRef.current!.getBoundingClientRect();
+    const rect = containerRef.current!.getBoundingClientRect();
     const cx = e.clientX - rect.left;
     const cy = e.clientY - rect.top;
 
@@ -200,10 +195,11 @@ export function ConstellationAnimation() {
   return (
     <div
       ref={containerRef}
-      className="w-1/2 h-full flex flex-col bg-[#282c34] items-center justify-center relative overflow-hidden"
-      style={{ cursor: "crosshair" }}
+      className="w-full h-full bg-[#282c34] relative overflow-hidden cursor-crosshair"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onClick={handleClick}
     >
-      {/* Subtle grid overlay */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -215,10 +211,7 @@ export function ConstellationAnimation() {
 
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full"
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        onClick={handleClick}
+        className="absolute inset-0 w-full h-full pointer-events-none"
       />
 
       <motion.div
@@ -227,15 +220,7 @@ export function ConstellationAnimation() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8, duration: 1 }}
       >
-        <span
-          style={{
-            fontFamily: "'Courier New', monospace",
-            letterSpacing: "0.25em",
-            fontSize: "10px",
-            color: "rgba(150, 200, 255, 0.45)",
-            textTransform: "uppercase",
-          }}
-        >
+        <span className="font-mono text-[10px] tracking-[0.25em] uppercase text-blue-300/45">
           New Era University Library
         </span>
       </motion.div>
