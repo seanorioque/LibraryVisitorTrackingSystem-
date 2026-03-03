@@ -3,33 +3,35 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
 export interface IAuthRouteProps {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }
 
-const AuthRoute: React.FunctionComponent<IAuthRouteProps> = (props) => {
-    const { children } = props;
-    const auth = getAuth();
-    const navigate = useNavigate();
-    const [ loading, setLoading ] = useState(true);
+const AuthRoute: React.FunctionComponent<IAuthRouteProps> = ({ children }) => {
+  const auth = getAuth();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (user) {
-                setLoading(false);
-            } else {
-                console.log('unauthorized');
-                setLoading(false);
-                navigate('/login')
-            }
-        });
-        return () => unsubscribe();
-    }, [auth, navigate]);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setAuthenticated(true);
+      } else {
+        setAuthenticated(false);
+        navigate('/login', { replace: true });
+      }
+      setLoading(false); // ✅ Only stop loading AFTER Firebase responds
+    });
+    return () => unsubscribe();
+  }, [auth, navigate]);
 
-    if (loading) return <p></p>;
+  // ✅ Show nothing while Firebase is still resolving — prevents flash redirect
+  if (loading) return null;
 
-    return <div>{ children }</div>;
+  // ✅ Only render children once confirmed authenticated
+  if (!authenticated) return null;
 
-}
+  return <>{children}</>;
+};
 
-
-export default AuthRoute
+export default AuthRoute;
