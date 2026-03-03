@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth"; // ✅ add signOut
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+} from "firebase/auth"; // ✅ add signOut
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ConstellationAnimation } from "./LoginAnimation";
@@ -144,11 +149,7 @@ const Login = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1 }}
         className="absolute bottom-6 left-0 right-0 z-10 flex justify-center pointer-events-none"
-      >
-        <span className="text-[10px] font-mono tracking-[0.25em] uppercase text-blue-300/25">
-          © {new Date().getFullYear()} New Era University
-        </span>
-      </motion.div>
+      ></motion.div>
     </div>
   );
 };
