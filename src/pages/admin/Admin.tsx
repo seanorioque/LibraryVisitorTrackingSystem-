@@ -6,6 +6,8 @@ import {
 } from "recharts";
 import React from "react";
 import Colleges from  "../../utils/College.ts"
+import Reasons from "../../utils/Reasons.ts"
+import Logo from "../../components/newEraLogo.png";
 
 // ─── THEME ────────────────────────────────────────────────────────────────────
 const T = {
@@ -47,7 +49,6 @@ interface Log {
   reason: string;
   date: string;
   time: string;
-  valid: boolean;
 }
 
 interface CollegeEntry {
@@ -68,18 +69,6 @@ interface CollegeData {
 type BtnVariant = "primary" | "danger" | "success" | "ghost";
 
 // ─── MOCK DATA ─────────────────────────────────────────────────────────────────
-
-
-const REASONS: string[] = [
-  "Study / Review",
-  "Research",
-  "Borrow Books",
-  "Return Books",
-  "Use Computers",
-  "Group Discussion",
-  "Attend Seminar",
-  "Print / Photocopy",
-];
 
 const generateUsers = (): User[] => Array.from({ length: 48 }, (_, i) => ({
   id: i + 1,
@@ -109,7 +98,7 @@ const generateLogs = (): Log[] => Array.from({ length: 120 }, (_, i) => {
             "Marco Bautista", "Claire Garcia", "Ralph Torres"][i % 8]) + ` ${(i % 15) + 1}`,
     email: `student${(i % 48) + 1}@neu.edu.ph`,
     college: Colleges[i % Colleges.length],
-    reason: REASONS[i % REASONS.length],
+    reason: Reasons[i % Reasons.length],
     date: `2025-0${month}-${String(day).padStart(2, "0")}`,
     time: `${String(hour).padStart(2, "0")}:${String(min).padStart(2, "0")}`,
     valid: i % 9 !== 0,
@@ -140,7 +129,7 @@ const collegeData: CollegeData[] = Colleges.map((c, i) => ({
   fill: [T.accent, T.green, T.yellow, T.purple, T.cyan, T.red, "#ff9f43", "#a29bfe"][i],
 }));
 
-const reasonData = REASONS.map((r, i) => ({
+const reasonData = Reasons.map((r, i) => ({
   name: r,
   value: [312, 248, 189, 167, 143, 201, 88, 134][i],
 }));
@@ -572,8 +561,8 @@ const PageLogs = () => {
     return matchDate && matchCollege && matchReason;
   });
 
-  const deleteInvalid = () => setLogs(prev => prev.filter(l => l.valid));
-  const invalidCount  = logs.filter(l => !l.valid).length;
+  ;
+
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -584,13 +573,12 @@ const PageLogs = () => {
           options={[{ value: "all", label: "All Colleges" }, ...Colleges.map(c => ({ value: c, label: c }))]}
           style={{ minWidth: 180 }} />
         <Select value={filterReason} onChange={setFilterReason}
-          options={[{ value: "all", label: "All Reasons" }, ...REASONS.map(r => ({ value: r, label: r }))]}
+          options={[{ value: "all", label: "All Reasons" }, ...Reasons.map(r => ({ value: r, label: r }))]}
           style={{ minWidth: 160 }} />
         <div style={{ flex: 1 }} />
         <Btn variant="ghost" onClick={() => exportToExcel(filtered as unknown as Record<string, unknown>[], "visit-logs-export")}>📥 Export Excel</Btn>
         <Btn variant="ghost" onClick={printReport}>🖨️ Print</Btn>
         <Btn variant="ghost" onClick={() => setShowEmailModal(true)}>📧 Email</Btn>
-        {invalidCount > 0 && <Btn variant="danger" onClick={deleteInvalid}>🗑️ Delete {invalidCount} Invalid</Btn>}
         <span style={{ color: T.textLo, fontSize: 12 }}>{filtered.length} records</span>
       </div>
 
@@ -605,7 +593,6 @@ const PageLogs = () => {
             <TD style={{ fontSize: 11 }}>{l.reason}</TD>
             <TD style={{ fontSize: 11 }}>{l.date}</TD>
             <TD style={{ fontSize: 11 }}>{l.time}</TD>
-            <TD>{l.valid ? <span style={{ color: T.green, fontSize: 11 }}>✓ Valid</span> : <span style={{ color: T.red, fontSize: 11 }}>✗ Invalid</span>}</TD>
           </>)}
         />
       </Card>
@@ -897,7 +884,8 @@ export default function App() {
         style={{ background: T.surface, borderRight: `1px solid ${T.border}`, display: "flex", flexDirection: "column", position: "fixed", top: 0, left: 0, bottom: 0, zIndex: 100, overflow: "hidden" }}
       >
         <div style={{ padding: "18px 16px", borderBottom: `1px solid ${T.border}`, display: "flex", alignItems: "center", gap: 10, minHeight: 64 }}>
-          <div style={{ width: 34, height: 34, borderRadius: 8, background: T.accent + "22", border: `1px solid ${T.accent}44`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>📚</div>
+          <div ><img src={Logo} alt="Logo" style={{ width: 50, height: 50 }} /></div>
+          
           <AnimatePresence>
             {!collapsed && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>

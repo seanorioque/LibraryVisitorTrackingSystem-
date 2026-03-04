@@ -1,5 +1,5 @@
 export const Colleges: string[] = [
-  "College of Engineering",
+  "College of Laiza",
   "College of Business Administration",
   "College of Education",
   "College of Computer Studies",
@@ -7,6 +7,7 @@ export const Colleges: string[] = [
   "College of Nursing",
   "College of Architecture",
   "College of Criminology",
+
 ];
 
 
