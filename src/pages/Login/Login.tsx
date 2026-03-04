@@ -89,7 +89,7 @@ const Login = () => {
               className="text-white text-2xl font-bold tracking-tight"
               style={{ fontFamily: "Georgia, serif" }}
             >
-              Welcome back
+              Welcome 
             </h1>
             <p className="mt-2 text-xs text-blue-200/40 font-mono tracking-wide">
               Sign in with your university account
@@ -109,7 +109,7 @@ const Login = () => {
 
           <motion.button
             initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: 0.5, duration: 0.6 }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}

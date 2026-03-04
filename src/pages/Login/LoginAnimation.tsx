@@ -2,7 +2,7 @@ import { useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 
 const NUM_PARTICLES = 100;
-const CONNECTION_DIST = 50;
+const CONNECTION_DIST = 100;
 const REPEL_DIST = 100;
 
 function randomBetween(a: number, b: number) {
