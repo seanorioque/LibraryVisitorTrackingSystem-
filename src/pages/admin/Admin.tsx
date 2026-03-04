@@ -8,9 +8,9 @@ import React from "react";
 import Colleges from  "../../utils/College.ts"
 import Reasons from "../../utils/Reasons.ts"
 import Logo from "../../components/newEraLogo.png";
-
+import {PageDashboard} from "./PageDashboard.tsx";
 // ─── THEME ────────────────────────────────────────────────────────────────────
-const T = {
+export const T = {
   bg:       "#282c34",
   surface:  "#2f333d",
   elevated: "#353a45",
@@ -27,7 +27,7 @@ const T = {
 };
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
-type PageId = "dashboard" | "users" | "logs" | "blocked" | "colleges" | "reports";
+export type PageId = "dashboard" | "users" | "logs" | "blocked" | "colleges" | "reports";
 
 interface User {
   id: number;
@@ -105,10 +105,10 @@ const generateLogs = (): Log[] => Array.from({ length: 120 }, (_, i) => {
   };
 });
 
-const USERS: User[] = generateUsers();
+export const USERS: User[] = generateUsers();
 const LOGS: Log[]   = generateLogs();
 
-const weeklyData = [
+export const weeklyData = [
   { day: "Mon", visitors: 142 },
   { day: "Tue", visitors: 198 },
   { day: "Wed", visitors: 231 },
@@ -123,20 +123,20 @@ const monthlyData = Array.from({ length: 30 }, (_, i) => ({
   visitors: Math.floor(Math.random() * 180) + 60,
 }));
 
-const collegeData: CollegeData[] = Colleges.map((c, i) => ({
+export const collegeData: CollegeData[] = Colleges.map((c, i) => ({
   name: c.replace("College of ", ""),
   visitors: [342, 287, 198, 423, 156, 211, 134, 178][i],
   fill: [T.accent, T.green, T.yellow, T.purple, T.cyan, T.red, "#ff9f43", "#a29bfe"][i],
 }));
 
-const reasonData = Reasons.map((r, i) => ({
+export const reasonData = Reasons.map((r, i) => ({
   name: r,
   value: [312, 248, 189, 167, 143, 201, 88, 134][i],
 }));
 
-const PIE_COLORS = [T.accent, T.green, T.yellow, T.purple, T.cyan, T.red, "#ff9f43", "#a29bfe"];
+export const PIE_COLORS = [T.accent, T.green, T.yellow, T.purple, T.cyan, T.red, "#ff9f43", "#a29bfe"];
 
-const hourlyData = Array.from({ length: 13 }, (_, i) => ({
+export const hourlyData = Array.from({ length: 13 }, (_, i) => ({
   hour: `${7 + i}:00`,
   count: [12, 28, 45, 67, 89, 102, 98, 87, 74, 56, 42, 31, 18][i],
 }));
@@ -164,7 +164,7 @@ interface StatCardProps {
   color: string;
   trend?: number;
 }
-const StatCard = ({ icon, label, value, sub, color, trend }: StatCardProps) => (
+export const StatCard = ({ icon, label, value, sub, color, trend }: StatCardProps) => (
   <motion.div
     initial={{ opacity: 0, y: 16 }}
     animate={{ opacity: 1, y: 0 }}
@@ -232,7 +232,7 @@ interface BtnProps {
   style?: React.CSSProperties;
   disabled?: boolean;
 }
-const Btn = ({ children, onClick, variant = "primary", style, disabled }: BtnProps) => {
+export const Btn = ({ children, onClick, variant = "primary", style, disabled }: BtnProps) => {
   const colors: Record<BtnVariant, { bg: string; color: string; border?: string }> = {
     primary: { bg: T.accent,   color: "#fff" },
     danger:  { bg: T.red,      color: "#fff" },
@@ -253,13 +253,13 @@ const Btn = ({ children, onClick, variant = "primary", style, disabled }: BtnPro
   );
 };
 
-const SectionTitle = ({ children }: { children: React.ReactNode }) => (
+export const SectionTitle = ({ children }: { children: React.ReactNode }) => (
   <div style={{ color: T.textHi, fontSize: 16, fontWeight: 700, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
     {children}
   </div>
 );
 
-const Card = ({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) => (
+export const Card = ({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) => (
   <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 12, padding: 20, ...style }}>
     {children}
   </div>
@@ -309,7 +309,7 @@ const TD = ({ children, style }: { children: React.ReactNode; style?: React.CSSP
   <td style={{ padding: "10px 12px", color: T.text, verticalAlign: "middle", ...style }}>{children}</td>
 );
 
-const RealTimePulse = ({ count }: { count: number }) => (
+export const RealTimePulse = ({ count }: { count: number }) => (
   <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 14px", background: T.green + "15", border: `1px solid ${T.green}44`, borderRadius: 20, fontSize: 13 }}>
     <motion.div
       animate={{ scale: [1, 1.4, 1], opacity: [1, 0.5, 1] }}
@@ -368,95 +368,7 @@ const EmailModal = ({ onClose }: { onClose: () => void }) => {
 
 // ─── PAGES ────────────────────────────────────────────────────────────────────
 
-const PageDashboard = ({ liveCount, setPage }: { liveCount: number; setPage: (p: PageId) => void }) => {
-  const todayTotal  = 247;
-  const weekTotal   = 1432;
-  const monthTotal  = 5891;
-  const blockedCount = USERS.filter(u => u.status === "blocked").length;
 
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14 }}>
-        <StatCard icon="👥" label="Total Visitors Today" value={todayTotal} color={T.accent} trend={12} />
-        <StatCard icon="📅" label="This Week"            value={weekTotal}  color={T.green}  trend={5} />
-        <StatCard icon="🗓️" label="This Month"           value={monthTotal} color={T.purple} sub="June 2025" />
-        <StatCard icon="🚫" label="Blocked Users"        value={blockedCount} color={T.red}  sub="Click to manage" />
-      </div>
-
-      <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-        <RealTimePulse count={liveCount} />
-        <div style={{ flex: 1 }} />
-        <Btn variant="ghost" onClick={() => setPage("users")}>👤 Manage Users</Btn>
-        <Btn variant="ghost" onClick={() => setPage("logs")}>📋 View Logs</Btn>
-        <Btn variant="ghost" onClick={() => setPage("reports")}>📊 Reports</Btn>
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-        <Card>
-          <SectionTitle>📈 Daily Traffic (This Week)</SectionTitle>
-          <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={weeklyData}>
-              <defs>
-                <linearGradient id="colorV" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor={T.accent} stopOpacity={0.3} />
-                  <stop offset="95%" stopColor={T.accent} stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke={T.border} />
-              <XAxis dataKey="day" tick={{ fill: T.textLo, fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: T.textLo, fontSize: 11 }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ background: T.elevated, border: `1px solid ${T.border}`, borderRadius: 8, color: T.textHi }} />
-              <Area type="monotone" dataKey="visitors" stroke={T.accent} fill="url(#colorV)" strokeWidth={2} dot={{ fill: T.accent, r: 3 }} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </Card>
-
-        <Card>
-          <SectionTitle>🏛️ Visitors per College</SectionTitle>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={collegeData} layout="vertical" barSize={10}>
-              <CartesianGrid strokeDasharray="3 3" stroke={T.border} horizontal={false} />
-              <XAxis type="number" tick={{ fill: T.textLo, fontSize: 10 }} axisLine={false} tickLine={false} />
-              <YAxis type="category" dataKey="name" tick={{ fill: T.textLo, fontSize: 10 }} axisLine={false} tickLine={false} width={80} />
-              <Tooltip contentStyle={{ background: T.elevated, border: `1px solid ${T.border}`, borderRadius: 8, color: T.textHi }} />
-              <Bar dataKey="visitors" radius={[0, 4, 4, 0]}>
-                {collegeData.map((e, i) => <Cell key={i} fill={e.fill} />)}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </Card>
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-        <Card>
-          <SectionTitle>⏰ Hourly Traffic (Today)</SectionTitle>
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={hourlyData}>
-              <CartesianGrid strokeDasharray="3 3" stroke={T.border} />
-              <XAxis dataKey="hour" tick={{ fill: T.textLo, fontSize: 10 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: T.textLo, fontSize: 11 }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ background: T.elevated, border: `1px solid ${T.border}`, borderRadius: 8, color: T.textHi }} />
-              <Line type="monotone" dataKey="count" stroke={T.yellow} strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
-            </LineChart>
-          </ResponsiveContainer>
-        </Card>
-
-        <Card>
-          <SectionTitle>📝 Top Reasons for Visit</SectionTitle>
-          <ResponsiveContainer width="100%" height={200}>
-            <PieChart>
-              <Pie data={reasonData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value" paddingAngle={2}>
-                {reasonData.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
-              </Pie>
-              <Tooltip contentStyle={{ background: T.elevated, border: `1px solid ${T.border}`, borderRadius: 8, color: T.textHi }} />
-              <Legend formatter={(v: string) => <span style={{ color: T.textLo, fontSize: 10 }}>{v}</span>} />
-            </PieChart>
-          </ResponsiveContainer>
-        </Card>
-      </div>
-    </div>
-  );
-};
 
 // ── Users ──
 const PageUsers = () => {
@@ -584,7 +496,7 @@ const PageLogs = () => {
 
       <Card style={{ padding: 0 }}>
         <Table
-          columns={["Name", "Email", "College", "Reason", "Date", "Time", "Valid"]}
+          columns={["Name", "Email", "College", "Reason", "Date", "Time",]}
           data={filtered}
           renderRow={(l: Log) => (<>
             <TD style={{ color: T.textHi, fontWeight: 500, whiteSpace: "nowrap" }}>{l.name}</TD>
