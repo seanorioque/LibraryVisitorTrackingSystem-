@@ -10,7 +10,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { initializeApp } from "firebase/app";
-import AuthRoute from "./AuthRoute.tsx";
+import AuthRoute from "./hooks/AuthRoute.tsx";
 import { firebaseConfig } from "./hooks/firebase.ts";
 
 initializeApp(firebaseConfig);
