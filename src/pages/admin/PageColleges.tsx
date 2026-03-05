@@ -1,7 +1,8 @@
-import { T, Btn, Card,Modal, CollegeEntry,PIE_COLORS, collegeData, Input,fmt} from "./Admin";
+import { Btn, Card,Modal, CollegeEntry,PIE_COLORS, collegeData, Input,fmt} from "./Admin";
 import { useState, } from "react";
 import { AnimatePresence } from "framer-motion";
 import Colleges  from "../../utils/College";
+import T from "../../utils/theme.ts"
 
 
 const PageColleges = () => {

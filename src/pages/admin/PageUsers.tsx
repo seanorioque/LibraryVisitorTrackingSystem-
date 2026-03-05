@@ -1,7 +1,9 @@
-import { USERS, T, Btn, Card, User, TD,Select, Input, exportToExcel,Table,Badge,BlockModal} from "./Admin";
+import { USERS,  Btn, Card, TD,Select, Input, exportToExcel,Table,Badge,BlockModal} from "./Admin";
 import { useState, } from "react";
 import { AnimatePresence } from "framer-motion";
-import Colleges from  "../../utils/College.ts"
+import Colleges from  "../../utils/College.ts";
+import T from "../../utils/theme.ts"
+import User from "../../types/User.ts" 
 
 const PageUsers = () => {
   const [users, setUsers] = useState<User[]>(USERS);
