@@ -4,13 +4,14 @@ import Colleges from "../../utils/College.ts";
 import { useState,  } from "react";
 import Reasons from "../../utils/Reasons.ts";
 import Log from "../../types/Log.ts"
-import { LOGS,Select,Btn,  printReport, } from "./Admin.tsx";
+import { LOGS,Select,  printReport, } from "./Admin.tsx";
 import T from "../../utils/theme.ts"
 import { AnimatePresence } from "framer-motion";
 import EmailModal from "../../components/EmailModal.tsx";
 import TD from "../../components/TD.tsx"
 import Table from "../../components/Table.tsx";
 import Card from "../../components/Card.tsx";
+import Btn from "../../components/Btn.tsx"
 
 
 

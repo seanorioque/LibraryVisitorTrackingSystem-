@@ -1,6 +1,3 @@
-import {
-  Btn,
-} from "./Admin";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import Colleges from "../../utils/College";
@@ -12,7 +9,7 @@ import { fmt } from "../../utils/format.ts";
 import Input from "../../components/Input.tsx"
 import Modal from "../../components/Modal.tsx"
 import Card from "../../components/Card.tsx";
-
+import Btn from "../../components/Btn.tsx"
 const PageColleges = () => {
   const [colleges, setColleges] = useState<CollegeEntry[]>(
     Colleges.map((c, i) => ({
