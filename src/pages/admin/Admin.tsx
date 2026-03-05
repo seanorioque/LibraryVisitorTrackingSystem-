@@ -10,6 +10,8 @@ import Reasons from "../../utils/Reasons.ts"
 import Logo from "../../components/newEraLogo.png";
 import {PageDashboard} from "./PageDashboard.tsx";
 import PageUsers from "./PageUsers.tsx"
+import PageBlocked from "./PageBlocked.tsx";
+import PageColleges from "./PageColleges.tsx";
 // ─── THEME ────────────────────────────────────────────────────────────────────
 export const T = {
   bg:       "#282c34",
@@ -52,7 +54,7 @@ interface Log {
   time: string;
 }
 
-interface CollegeEntry {
+export interface CollegeEntry {
   id: number;
   name: string;
   departments: string[];
@@ -61,7 +63,7 @@ interface CollegeEntry {
   active: boolean;
 }
 
-interface CollegeData {
+export interface CollegeData {
   name: string;
   visitors: number;
   fill: string;
@@ -143,7 +145,7 @@ export const hourlyData = Array.from({ length: 13 }, (_, i) => ({
 }));
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
-const fmt = (n: number) => n.toLocaleString();
+export const fmt = (n: number) => n.toLocaleString();
 
 export const exportToExcel = (data: Record<string, unknown>[], filename: string) => {
   const headers = Object.keys(data[0]).join(",");
@@ -446,153 +448,8 @@ const PageLogs = () => {
   );
 };
 
-// ── Blocked ──
-const PageBlocked = () => {
-  const [users, setUsers]     = useState<User[]>(USERS.filter(u => u.status === "blocked"));
-  const [selected, setSelected] = useState<User | null>(null);
-
-  const unblock = (id: number) => {
-    setUsers(prev => prev.filter(u => u.id !== id));
-    setSelected(null);
-  };
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      {users.length === 0 ? (
-        <Card style={{ textAlign: "center", padding: 48 }}>
-          <div style={{ fontSize: 48, marginBottom: 12 }}>🎉</div>
-          <div style={{ color: T.textHi, fontWeight: 600 }}>No blocked users!</div>
-          <div style={{ color: T.textLo, fontSize: 13, marginTop: 4 }}>All users currently have active access.</div>
-        </Card>
-      ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>
-          {users.map(u => (
-            <motion.div key={u.id} layout initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-              style={{ background: T.surface, border: `1px solid ${T.red}44`, borderRadius: 12, padding: 18, cursor: "pointer", transition: "border-color 0.2s" }}
-              onClick={() => setSelected(u)}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = T.red + "99")}
-              onMouseLeave={e => (e.currentTarget.style.borderColor = T.red + "44")}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
-                <div>
-                  <div style={{ color: T.textHi, fontWeight: 600, fontSize: 14 }}>{u.name}</div>
-                  <div style={{ color: T.textLo, fontSize: 11, marginTop: 2 }}>{u.email}</div>
-                </div>
-                <Badge status="blocked" />
-              </div>
-              <div style={{ color: T.textLo, fontSize: 11, marginBottom: 8 }}>{u.college}</div>
-              <div style={{ background: T.red + "11", border: `1px solid ${T.red}22`, borderRadius: 6, padding: "6px 10px", fontSize: 12 }}>
-                <span style={{ color: T.red, fontWeight: 600 }}>Reason: </span>
-                <span style={{ color: T.text }}>{u.blockReason}</span>
-              </div>
-              <div style={{ marginTop: 12, display: "flex", justifyContent: "flex-end" }}>
-                <Btn variant="success" onClick={e => { e.stopPropagation(); unblock(u.id); }}>✅ Unblock</Btn>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      )}
-
-      <AnimatePresence>
-        {selected && (
-          <Modal title="👤 Blocked User Details" onClose={() => setSelected(null)}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12, fontSize: 13 }}>
-              {([["Name", selected.name], ["Email", selected.email], ["College", selected.college], ["Last Visit", selected.lastVisit], ["Total Visits", String(selected.visits)]] as [string, string][]).map(([k, v]) => (
-                <div key={k} style={{ display: "flex", justifyContent: "space-between" }}>
-                  <span style={{ color: T.textLo }}>{k}</span>
-                  <span style={{ color: T.textHi, fontWeight: 500 }}>{v}</span>
-                </div>
-              ))}
-              <div style={{ background: T.red + "11", border: `1px solid ${T.red}33`, borderRadius: 8, padding: "10px 12px", marginTop: 4 }}>
-                <div style={{ color: T.red, fontSize: 11, fontWeight: 600, marginBottom: 4 }}>BLOCK REASON</div>
-                <div style={{ color: T.text }}>{selected.blockReason}</div>
-              </div>
-              <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 4 }}>
-                <Btn variant="ghost" onClick={() => setSelected(null)}>Close</Btn>
-                <Btn variant="success" onClick={() => unblock(selected.id)}>✅ Unblock User</Btn>
-              </div>
-            </div>
-          </Modal>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-};
-
 // ── Colleges ──
-const PageColleges = () => {
-  const [colleges, setColleges] = useState<CollegeEntry[]>(
-    Colleges.map((c, i) => ({
-      id: i + 1,
-      name: c,
-      departments: ([
-        ["Electrical Engineering", "Civil Engineering", "Mechanical Engineering", "Electronics Engineering"],
-        ["Accountancy", "Business Management", "Marketing", "Finance"],
-        ["Elementary Education", "Secondary Education", "Special Education"],
-        ["Information Technology", "Computer Science", "Data Science", "Cybersecurity"],
-        ["Psychology", "Political Science", "English", "Biology"],
-        ["Nursing", "Midwifery"],
-        ["Architecture", "Interior Design"],
-        ["Criminology"],
-      ] as string[][])[i],
-      color: PIE_COLORS[i],
-      visitors: collegeData[i].visitors,
-      active: true,
-    }))
-  );
 
-  const [addDeptModal, setAddDeptModal] = useState<number | null>(null);
-  const [newDept, setNewDept]           = useState("");
-
-  const addDept = (cid: number) => {
-    if (!newDept) return;
-    setColleges(prev => prev.map(c => c.id === cid ? { ...c, departments: [...c.departments, newDept] } : c));
-    setNewDept(""); setAddDeptModal(null);
-  };
-
-  const removeDept = (cid: number, dept: string) => {
-    setColleges(prev => prev.map(c => c.id === cid ? { ...c, departments: c.departments.filter(d => d !== dept) } : c));
-  };
-
-  return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 14 }}>
-      {colleges.map(col => (
-        <Card key={col.id} style={{ borderLeft: `3px solid ${col.color}` }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-            <div>
-              <div style={{ color: T.textHi, fontWeight: 700, fontSize: 14, marginBottom: 2 }}>{col.name}</div>
-              <div style={{ color: T.textLo, fontSize: 11 }}>{col.departments.length} departments · {fmt(col.visitors)} visitors</div>
-            </div>
-            <div style={{ width: 10, height: 10, borderRadius: "50%", background: col.color, marginTop: 4 }} />
-          </div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 12 }}>
-            {col.departments.map(d => (
-              <div key={d} style={{ display: "flex", alignItems: "center", gap: 4, background: col.color + "15", border: `1px solid ${col.color}33`, borderRadius: 12, padding: "3px 8px", fontSize: 11 }}>
-                <span style={{ color: T.text }}>{d}</span>
-                <button onClick={() => removeDept(col.id, d)} style={{ background: "none", border: "none", color: T.textLo, cursor: "pointer", fontSize: 10, padding: 0, lineHeight: 1 }}>✕</button>
-              </div>
-            ))}
-          </div>
-          <Btn variant="ghost" style={{ width: "100%", justifyContent: "center", fontSize: 11 }} onClick={() => setAddDeptModal(col.id)}>+ Add Department</Btn>
-        </Card>
-      ))}
-
-      <AnimatePresence>
-        {addDeptModal !== null && (
-          <Modal title="➕ Add Department" onClose={() => setAddDeptModal(null)}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <Input placeholder="Department name..." value={newDept} onChange={setNewDept} style={{ width: "100%" }} />
-              <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-                <Btn variant="ghost" onClick={() => setAddDeptModal(null)}>Cancel</Btn>
-                <Btn onClick={() => addDept(addDeptModal)} disabled={!newDept}>Add</Btn>
-              </div>
-            </div>
-          </Modal>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-};
 
 // ── Reports ──
 const PageReports = () => {
