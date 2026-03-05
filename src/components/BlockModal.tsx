@@ -1,8 +1,9 @@
 import User from "../types/User"
 import { useState,  } from "react";
 import T from "../utils/theme"
-import { Btn, Modal } from "../pages/admin/Admin";
+import { Btn,  } from "../pages/admin/Admin";
 import Input from "./Input";
+import Modal from "./Modal"
 export const BlockModal = ({
   user,
   onConfirm,
