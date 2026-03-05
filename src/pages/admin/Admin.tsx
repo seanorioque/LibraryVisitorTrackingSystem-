@@ -16,140 +16,19 @@ import User from "../../types/User.ts";
 import Log from "../../types/Log.ts";
 import generateUsers from "../../mocks/generateUsers.ts";
 import generateLogs from "../../mocks/generateLogs.ts";
-
-
+import NAV from "../../constants/nav.ts";
+import { exportToExcel } from "../../utils/export.ts";
+import InputProps from "../../types/InputProps.ts";
 
 export const USERS: User[] = generateUsers();
 export const LOGS: Log[] = generateLogs();
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
-export const fmt = (n: number) => n.toLocaleString();
-
-export const exportToExcel = (
-  data: Record<string, unknown>[],
-  filename: string,
-) => {
-  const headers = Object.keys(data[0]).join(",");
-  const rows = data
-    .map((r) =>
-      Object.values(r)
-        .map((v) => `"${v}"`)
-        .join(","),
-    )
-    .join("\n");
-  const blob = new Blob([headers + "\n" + rows], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename + ".csv";
-  a.click();
-};
 
 export const printReport = () => window.print();
 
 // ─── SUB-COMPONENTS ───────────────────────────────────────────────────────────
 
-interface StatCardProps {
-  icon: string;
-  label: string;
-  value: number;
-  sub?: string;
-  color: string;
-  trend?: number;
-}
-export const StatCard = ({
-  icon,
-  label,
-  value,
-  sub,
-  color,
-  trend,
-}: StatCardProps) => (
-  <motion.div
-    initial={{ opacity: 0, y: 16 }}
-    animate={{ opacity: 1, y: 0 }}
-    style={{
-      background: T.surface,
-      border: `1px solid ${T.border}`,
-      borderRadius: 12,
-      padding: "20px 24px",
-    }}
-  >
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "flex-start",
-      }}
-    >
-      <div>
-        <div
-          style={{
-            color: T.textLo,
-            fontSize: 11,
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-            marginBottom: 6,
-          }}
-        >
-          {label}
-        </div>
-        <div
-          style={{
-            color: T.textHi,
-            fontSize: 30,
-            fontWeight: 700,
-            lineHeight: 1,
-          }}
-        >
-          {fmt(value)}
-        </div>
-        {sub && (
-          <div style={{ color: T.textLo, fontSize: 12, marginTop: 4 }}>
-            {sub}
-          </div>
-        )}
-      </div>
-      <div
-        style={{
-          width: 44,
-          height: 44,
-          borderRadius: 10,
-          background: color + "22",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 20,
-        }}
-      >
-        {icon}
-      </div>
-    </div>
-    {trend !== undefined && (
-      <div
-        style={{
-          marginTop: 12,
-          display: "flex",
-          alignItems: "center",
-          gap: 4,
-          fontSize: 12,
-        }}
-      >
-        <span style={{ color: trend >= 0 ? T.green : T.red }}>
-          {trend >= 0 ? "▲" : "▼"} {Math.abs(trend)}%
-        </span>
-        <span style={{ color: T.textLo }}>vs yesterday</span>
-      </div>
-    )}
-  </motion.div>
-);
-
-interface InputProps {
-  placeholder: string;
-  value: string;
-  onChange: (v: string) => void;
-  style?: React.CSSProperties;
-}
 export const Input = ({ placeholder, value, onChange, style }: InputProps) => (
   <input
     value={value}
@@ -679,14 +558,6 @@ const PageLogs = () => {
 // ── Reports ──
 
 // ─── SIDEBAR ──────────────────────────────────────────────────────────────────
-const NAV: { id: PageId; icon: string; label: string }[] = [
-  { id: "dashboard", icon: "⊞", label: "Dashboard" },
-  { id: "users", icon: "👤", label: "Users" },
-  { id: "logs", icon: "📋", label: "Visit Logs" },
-  { id: "blocked", icon: "🚫", label: "Blocked Users" },
-  { id: "colleges", icon: "🏛️", label: "Colleges" },
-  { id: "reports", icon: "📊", label: "Reports" },
-];
 
 const PAGE_TITLES: Record<PageId, string> = {
   dashboard: "Dashboard Overview",
