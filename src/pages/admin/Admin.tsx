@@ -16,18 +16,15 @@ import Log from "../../types/Log.ts";
 import generateUsers from "../../mocks/generateUsers.ts";
 import generateLogs from "../../mocks/generateLogs.ts";
 import NAV from "../../constants/nav.ts";
-
+import RealTimePulse from "../../components/RealTimePulse.tsx";
 import { PAGE_TITLES } from "../../constants/pages.ts";
 import PageLogs from "./PageLogs.tsx";
-
 export const USERS: User[] = generateUsers();
 export const LOGS: Log[] = generateLogs();
 
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
-
 export const printReport = () => window.print();
 
-// ─── SUB-COMPONENTS ───────────────────────────────────────────────────────────
+
 
 
 interface SelectOption {
@@ -240,28 +237,7 @@ export const TD = ({
   </td>
 );
 
-export const RealTimePulse = ({ count }: { count: number }) => (
-  <div
-    style={{
-      display: "flex",
-      alignItems: "center",
-      gap: 8,
-      padding: "6px 14px",
-      background: T.green + "15",
-      border: `1px solid ${T.green}44`,
-      borderRadius: 20,
-      fontSize: 13,
-    }}
-  >
-    <motion.div
-      animate={{ scale: [1, 1.4, 1], opacity: [1, 0.5, 1] }}
-      transition={{ repeat: Infinity, duration: 1.5 }}
-      style={{ width: 8, height: 8, borderRadius: "50%", background: T.green }}
-    />
-    <span style={{ color: T.green, fontWeight: 700 }}>{count}</span>
-    <span style={{ color: T.textLo }}>visitors now</span>
-  </div>
-);
+
 
 // ─── MODALS ───────────────────────────────────────────────────────────────────
 
