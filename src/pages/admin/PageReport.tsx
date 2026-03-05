@@ -1,11 +1,4 @@
-import {
-  Btn,
-  USERS,
-  LOGS,
-  printReport,
-  SectionTitle,
-  
-} from "./Admin";
+import { Btn, USERS, LOGS, printReport } from "./Admin";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import {
@@ -29,11 +22,10 @@ import { PIE_COLORS } from "../../constants/charts.ts";
 import { exportToExcel } from "../../utils/export.ts";
 import { fmt } from "../../utils/format.ts";
 import EmailModal from "../../components/EmailModal.tsx";
-import TD from "../../components/TD.tsx"
+import TD from "../../components/TD.tsx";
 import Table from "../../components/Table.tsx";
 import Card from "../../components/Card.tsx";
-
-
+import { SectionTitle } from "../../components/SectionTitle.tsx";
 
 const PageReports = () => {
   const [showEmailModal, setShowEmailModal] = useState(false);

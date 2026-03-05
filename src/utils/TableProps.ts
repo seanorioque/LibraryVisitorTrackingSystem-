@@ -1,4 +1,3 @@
-import Table from "../components/Table";
 
 interface TableProps<T> {
   columns: string[];
