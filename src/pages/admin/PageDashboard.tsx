@@ -1,6 +1,5 @@
 import {
   USERS,
-  RealTimePulse,
   Btn,
   Card,
   SectionTitle,
@@ -29,6 +28,7 @@ import collegeData from "../../mocks/collegeData.ts";
 import reasonData from "../../mocks/reasonData.ts";
 import { PIE_COLORS, hourlyData } from "../../constants/charts.ts";
 import StatCard from "../../components/StatCard.tsx"
+import RealTimePulse from "../../components/RealTimePulse.tsx";
 
 export const PageDashboard = ({
   liveCount,
