@@ -4,7 +4,6 @@ import {
   USERS,
   LOGS,
   printReport,
-  TD,
   SectionTitle,
   Table,
 } from "./Admin";
@@ -31,6 +30,7 @@ import { PIE_COLORS } from "../../constants/charts.ts";
 import { exportToExcel } from "../../utils/export.ts";
 import { fmt } from "../../utils/format.ts";
 import EmailModal from "../../components/EmailModal.tsx";
+import TD from "../../components/TD.tsx"
 
 const PageReports = () => {
   const [showEmailModal, setShowEmailModal] = useState(false);

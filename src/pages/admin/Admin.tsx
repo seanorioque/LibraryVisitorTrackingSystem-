@@ -218,24 +218,7 @@ export function Table<T extends { id?: number }>({
   );
 }
 
-export const TD = ({
-  children,
-  style,
-}: {
-  children: React.ReactNode;
-  style?: React.CSSProperties;
-}) => (
-  <td
-    style={{
-      padding: "10px 12px",
-      color: T.text,
-      verticalAlign: "middle",
-      ...style,
-    }}
-  >
-    {children}
-  </td>
-);
+
 
 export default function App() {
   const [page, setPage] = useState<PageId>("dashboard");
