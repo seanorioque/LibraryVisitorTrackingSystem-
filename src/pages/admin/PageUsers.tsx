@@ -1,8 +1,4 @@
-import {
-  USERS,
-  Btn,
-  Select,
-} from "./Admin";
+import { USERS, Btn, Select } from "./Admin";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import Colleges from "../../utils/College.ts";
@@ -12,11 +8,9 @@ import Badge from "../../components/Badge.tsx";
 import { exportToExcel } from "../../utils/export.ts";
 import Input from "../../components/Input.tsx";
 import BlockModal from "../../components/BlockModal.tsx";
-import TD from "../../components/TD.tsx"
+import TD from "../../components/TD.tsx";
 import Table from "../../components/Table.tsx";
 import Card from "../../components/Card.tsx";
-
-
 
 const PageUsers = () => {
   const [users, setUsers] = useState<User[]>(USERS);
