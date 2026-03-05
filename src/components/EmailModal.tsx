@@ -1,9 +1,8 @@
-import {useState} from "react"
-import {Btn } from "../pages/admin/Admin";
+import { useState } from "react";
 import T from "../utils/theme";
 import Input from "./Input";
-
-import Modal from "./Modal"
+import Btn from "./Btn";
+import Modal from "./Modal";
 
 export const EmailModal = ({ onClose }: { onClose: () => void }) => {
   const [email, setEmail] = useState("");
