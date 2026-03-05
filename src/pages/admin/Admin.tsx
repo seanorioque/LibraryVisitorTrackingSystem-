@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area
+  BarChart, Bar, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,  AreaChart, Area
 } from "recharts";
 import React from "react";
 import Colleges from  "../../utils/College.ts"
 import Reasons from "../../utils/Reasons.ts"
 import Logo from "../../components/newEraLogo.png";
 import {PageDashboard} from "./PageDashboard.tsx";
+import PageUsers from "./PageUsers.tsx"
 // ─── THEME ────────────────────────────────────────────────────────────────────
 export const T = {
   bg:       "#282c34",
@@ -29,7 +30,7 @@ export const T = {
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 export type PageId = "dashboard" | "users" | "logs" | "blocked" | "colleges" | "reports";
 
-interface User {
+export interface User {
   id: number;
   name: string;
   email: string;
@@ -144,7 +145,7 @@ export const hourlyData = Array.from({ length: 13 }, (_, i) => ({
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 const fmt = (n: number) => n.toLocaleString();
 
-const exportToExcel = (data: Record<string, unknown>[], filename: string) => {
+export const exportToExcel = (data: Record<string, unknown>[], filename: string) => {
   const headers = Object.keys(data[0]).join(",");
   const rows = data.map(r => Object.values(r).map(v => `"${v}"`).join(",")).join("\n");
   const blob = new Blob([headers + "\n" + rows], { type: "text/csv" });
@@ -187,7 +188,7 @@ export const StatCard = ({ icon, label, value, sub, color, trend }: StatCardProp
   </motion.div>
 );
 
-const Badge = ({ status }: { status: "active" | "blocked" }) => (
+export const Badge = ({ status }: { status: "active" | "blocked" }) => (
   <span style={{
     padding: "2px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600,
     background: status === "active" ? T.green + "22" : T.red + "22",
@@ -202,7 +203,7 @@ interface InputProps {
   onChange: (v: string) => void;
   style?: React.CSSProperties;
 }
-const Input = ({ placeholder, value, onChange, style }: InputProps) => (
+export const Input = ({ placeholder, value, onChange, style }: InputProps) => (
   <input
     value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
     style={{ background: T.elevated, border: `1px solid ${T.border}`, borderRadius: 8, color: T.textHi, padding: "8px 12px", fontSize: 13, outline: "none", ...style }}
@@ -216,7 +217,7 @@ interface SelectProps {
   options: SelectOption[];
   style?: React.CSSProperties;
 }
-const Select = ({ value, onChange, options, style }: SelectProps) => (
+export const Select = ({ value, onChange, options, style }: SelectProps) => (
   <select
     value={value} onChange={e => onChange(e.target.value)}
     style={{ background: T.elevated, border: `1px solid ${T.border}`, borderRadius: 8, color: T.text, padding: "8px 12px", fontSize: 13, outline: "none", cursor: "pointer", ...style }}
@@ -270,7 +271,7 @@ interface TableProps<T> {
   data: T[];
   renderRow: (row: T) => React.ReactNode;
 }
-function Table<T extends { id?: number }>({ columns, data, renderRow }: TableProps<T>) {
+export function Table<T extends { id?: number }>({ columns, data, renderRow }: TableProps<T>) {
   return (
     <div style={{ overflowX: "auto" }}>
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
@@ -305,7 +306,7 @@ function Table<T extends { id?: number }>({ columns, data, renderRow }: TablePro
   );
 }
 
-const TD = ({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) => (
+export const TD = ({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) => (
   <td style={{ padding: "10px 12px", color: T.text, verticalAlign: "middle", ...style }}>{children}</td>
 );
 
@@ -369,80 +370,9 @@ const EmailModal = ({ onClose }: { onClose: () => void }) => {
 // ─── PAGES ────────────────────────────────────────────────────────────────────
 
 
-
 // ── Users ──
-const PageUsers = () => {
-  const [users, setUsers]               = useState<User[]>(USERS);
-  const [search, setSearch]             = useState("");
-  const [filterCollege, setFilterCollege] = useState("all");
-  const [filterStatus, setFilterStatus] = useState("all");
-  const [confirmModal, setConfirmModal] = useState<{ user: User; action: string } | null>(null);
 
-  const filtered = users.filter(u => {
-    const q = search.toLowerCase();
-    const matchSearch  = !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
-    const matchCollege = filterCollege === "all" || u.college === filterCollege;
-    const matchStatus  = filterStatus  === "all" || u.status  === filterStatus;
-    return matchSearch && matchCollege && matchStatus;
-  });
-
-  const toggle = (id: number, action: "block" | "unblock", reason?: string) => {
-    setUsers(prev => prev.map(u => u.id === id
-      ? { ...u, status: action === "block" ? "blocked" : "active", blockReason: action === "block" ? (reason ?? null) : null }
-      : u
-    ));
-    setConfirmModal(null);
-  };
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
-        <Input placeholder="🔍 Search by name or email..." value={search} onChange={setSearch} style={{ flex: 1, minWidth: 200 }} />
-        <Select value={filterCollege} onChange={setFilterCollege}
-          options={[{ value: "all", label: "All Colleges" }, ...Colleges.map(c => ({ value: c, label: c }))]}
-          style={{ minWidth: 180 }} />
-        <Select value={filterStatus} onChange={setFilterStatus}
-          options={[{ value: "all", label: "All Status" }, { value: "active", label: "Active" }, { value: "blocked", label: "Blocked" }]}
-          style={{ minWidth: 130 }} />
-        <Btn variant="ghost" onClick={() => exportToExcel(filtered as unknown as Record<string, unknown>[], "users-export")}>⬇ Export</Btn>
-        <span style={{ color: T.textLo, fontSize: 12 }}>{filtered.length} users</span>
-      </div>
-
-      <Card style={{ padding: 0 }}>
-        <Table
-          columns={["Name", "Email (Institutional)", "College", "Visits", "Last Visit", "Status", "Actions"]}
-          data={filtered}
-          renderRow={(u: User) => (<>
-            <TD style={{ color: T.textHi, fontWeight: 500 }}>{u.name}</TD>
-            <TD>{u.email}</TD>
-            <TD style={{ maxWidth: 140 }}><span style={{ fontSize: 11 }}>{u.college}</span></TD>
-            <TD style={{ color: T.accent }}>{u.visits}</TD>
-            <TD style={{ fontSize: 11 }}>{u.lastVisit}</TD>
-            <TD><Badge status={u.status} /></TD>
-            <TD>
-              {u.status === "active"
-                ? <Btn variant="danger"  onClick={() => setConfirmModal({ user: u, action: "block" })}>🚫 Block</Btn>
-                : <Btn variant="success" onClick={() => toggle(u.id, "unblock")}>✅ Unblock</Btn>
-              }
-            </TD>
-          </>)}
-        />
-      </Card>
-
-      <AnimatePresence>
-        {confirmModal && (
-          <BlockModal
-            user={confirmModal.user}
-            onConfirm={(r: string) => toggle(confirmModal.user.id, "block", r)}
-            onClose={() => setConfirmModal(null)}
-          />
-        )}
-      </AnimatePresence>
-    </div>
-  );
-};
-
-const BlockModal = ({ user, onConfirm, onClose }: { user: User; onConfirm: (r: string) => void; onClose: () => void }) => {
+export const BlockModal = ({ user, onConfirm, onClose }: { user: User; onConfirm: (r: string) => void; onClose: () => void }) => {
   const [reason, setReason] = useState("");
   return (
     <Modal title={`🚫 Block ${user.name}?`} onClose={onClose}>

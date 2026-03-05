@@ -1,13 +1,9 @@
 import { USERS,PageId, StatCard, T, RealTimePulse, Btn, Card, SectionTitle, weeklyData, collegeData,hourlyData,reasonData,PIE_COLORS} from "./Admin";
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area
 } from "recharts";
-import React from "react";
-
-
 
 
 export const PageDashboard = ({ liveCount, setPage }: { liveCount: number; setPage: (p: PageId) => void }) => {
