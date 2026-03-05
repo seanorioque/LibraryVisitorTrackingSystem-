@@ -2,8 +2,6 @@ import {
   Btn,
   Card,
   Modal,
-
-  Input,
 } from "./Admin";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
@@ -13,6 +11,7 @@ import CollegeEntry from "../../types/CollegeEntry.ts";
 import collegeData from "../../mocks/collegeData.ts";
 import { PIE_COLORS } from "../../constants/charts.ts";
 import { fmt } from "../../utils/format.ts";
+import Input from "../../components/Input.tsx"
 const PageColleges = () => {
   const [colleges, setColleges] = useState<CollegeEntry[]>(
     Colleges.map((c, i) => ({
