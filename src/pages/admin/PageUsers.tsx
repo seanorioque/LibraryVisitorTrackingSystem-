@@ -5,7 +5,7 @@ import {
   TD,
   Select,
   Table,
-  BlockModal,
+
 } from "./Admin";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
@@ -15,6 +15,8 @@ import User from "../../types/User.ts";
 import Badge from "../../components/Badge.tsx";
 import { exportToExcel } from "../../utils/export.ts";
 import Input from "../../components/Input.tsx";
+import BlockModal from "../../components/BlockModal.tsx";
+
 
 const PageUsers = () => {
   const [users, setUsers] = useState<User[]>(USERS);
