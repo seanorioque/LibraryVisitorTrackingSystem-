@@ -1,7 +1,6 @@
 import {
   USERS,
   Btn,
-  Card,
   Select,
 } from "./Admin";
 import { useState } from "react";
@@ -15,6 +14,7 @@ import Input from "../../components/Input.tsx";
 import BlockModal from "../../components/BlockModal.tsx";
 import TD from "../../components/TD.tsx"
 import Table from "../../components/Table.tsx";
+import Card from "../../components/Card.tsx";
 
 
 

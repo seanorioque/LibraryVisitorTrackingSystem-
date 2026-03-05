@@ -1,4 +1,4 @@
-import { USERS, Btn, Card,  } from "./Admin";
+import { USERS, Btn,  } from "./Admin";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
@@ -6,6 +6,7 @@ import T from "../../utils/theme.ts";
 import User from "../../types/User.ts";
 import Badge from "../../components/Badge.tsx";
 import Modal from "../../components/Modal.tsx";
+import Card from "../../components/Card.tsx";
 
 const PageBlocked = () => {
   const [users, setUsers] = useState<User[]>(
