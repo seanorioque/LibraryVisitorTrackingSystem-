@@ -237,15 +237,6 @@ export const TD = ({
   </td>
 );
 
-
-
-// ─── MODALS ───────────────────────────────────────────────────────────────────
-
-
-
-
-
-
 export default function App() {
   const [page, setPage] = useState<PageId>("dashboard");
   const [liveCount, setLiveCount] = useState(23);
