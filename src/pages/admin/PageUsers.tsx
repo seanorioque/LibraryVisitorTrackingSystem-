@@ -2,7 +2,6 @@ import {
   USERS,
   Btn,
   Card,
-  TD,
   Select,
   Table,
 
@@ -16,6 +15,7 @@ import Badge from "../../components/Badge.tsx";
 import { exportToExcel } from "../../utils/export.ts";
 import Input from "../../components/Input.tsx";
 import BlockModal from "../../components/BlockModal.tsx";
+import TD from "../../components/TD.tsx"
 
 
 const PageUsers = () => {
