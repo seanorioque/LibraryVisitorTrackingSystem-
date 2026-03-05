@@ -4,7 +4,6 @@ import {
   Card,
   TD,
   Select,
-  Input,
   Table,
   BlockModal,
 } from "./Admin";
@@ -15,6 +14,7 @@ import T from "../../utils/theme.ts";
 import User from "../../types/User.ts";
 import Badge from "../../components/Badge.tsx";
 import { exportToExcel } from "../../utils/export.ts";
+import Input from "../../components/Input.tsx";
 
 const PageUsers = () => {
   const [users, setUsers] = useState<User[]>(USERS);
