@@ -5,11 +5,6 @@ import {
   Btn,
   Card,
   SectionTitle,
-  weeklyData,
-  collegeData,
-  hourlyData,
-  reasonData,
-  PIE_COLORS,
 } from "./Admin";
 import {
   BarChart,
@@ -30,6 +25,10 @@ import {
 } from "recharts";
 import T from "../../utils/theme.ts";
 import PageId from "../../types/PageId.ts";
+import weeklyData from "../../mocks/weeklyData.ts";
+import collegeData from "../../mocks/collegeData.ts";
+import reasonData from "../../mocks/reasonData.ts";
+import { PIE_COLORS, hourlyData } from "../../constants/charts.ts";
 
 export const PageDashboard = ({
   liveCount,

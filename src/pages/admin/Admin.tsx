@@ -13,135 +13,14 @@ import PageReports from "./PageReport.tsx";
 import PageId from "../../types/PageId.ts";
 import BtnVariant from "../../types/BtnVariant.ts";
 import User from "../../types/User.ts";
-import CollegeData from "../../types/CollegeData.ts";
 import Log from "../../types/Log.ts";
+import generateUsers from "../../mocks/generateUsers.ts";
+import generateLogs from "../../mocks/generateLogs.ts";
 
-// ─── MOCK DATA ─────────────────────────────────────────────────────────────────
 
-const generateUsers = (): User[] =>
-  Array.from({ length: 48 }, (_, i) => ({
-    id: i + 1,
-    name:
-      [
-        "Maria Santos",
-        "Juan Dela Cruz",
-        "Ana Reyes",
-        "Carlo Mendoza",
-        "Liza Flores",
-        "Marco Bautista",
-        "Claire Garcia",
-        "Ralph Torres",
-        "Jenny Villanueva",
-        "Kevin Aquino",
-        "Patricia Lopez",
-        "Ryan Cruz",
-        "Michelle Tan",
-        "Joseph Lim",
-        "Stephanie Ocampo",
-        "Brian Fernandez",
-        "Kristine Ramos",
-        "Daniel Castro",
-        "Maricel Espinosa",
-        "Paul Navarro",
-      ][i % 20] + ` ${i + 1}`,
-    email: `student${i + 1}@neu.edu.ph`,
-    college: Colleges[i % Colleges.length],
-    status: i % 7 === 0 ? "blocked" : "active",
-    blockReason:
-      i % 7 === 0
-        ? [
-            "Unauthorized access attempt",
-            "Disruptive behavior",
-            "Overdue materials",
-            "Tailgating",
-          ][i % 4]
-        : null,
-    visits: Math.floor(Math.random() * 80) + 5,
-    lastVisit: `2025-0${(i % 3) + 6}-${String((i % 28) + 1).padStart(2, "0")}`,
-    registeredAt: `2024-0${(i % 9) + 1}-${String((i % 28) + 1).padStart(2, "0")}`,
-  }));
-
-const generateLogs = (): Log[] =>
-  Array.from({ length: 120 }, (_, i) => {
-    const hour = 7 + (i % 13);
-    const min = (i * 7) % 60;
-    const day = (i % 28) + 1;
-    const month = (i % 4) + 3;
-    return {
-      id: i + 1,
-      name:
-        [
-          "Maria Santos",
-          "Juan Dela Cruz",
-          "Ana Reyes",
-          "Carlo Mendoza",
-          "Liza Flores",
-          "Marco Bautista",
-          "Claire Garcia",
-          "Ralph Torres",
-        ][i % 8] + ` ${(i % 15) + 1}`,
-      email: `student${(i % 48) + 1}@neu.edu.ph`,
-      college: Colleges[i % Colleges.length],
-      reason: Reasons[i % Reasons.length],
-      date: `2025-0${month}-${String(day).padStart(2, "0")}`,
-      time: `${String(hour).padStart(2, "0")}:${String(min).padStart(2, "0")}`,
-      valid: i % 9 !== 0,
-    };
-  });
 
 export const USERS: User[] = generateUsers();
 export const LOGS: Log[] = generateLogs();
-
-export const weeklyData = [
-  { day: "Mon", visitors: 142 },
-  { day: "Tue", visitors: 198 },
-  { day: "Wed", visitors: 231 },
-  { day: "Thu", visitors: 187 },
-  { day: "Fri", visitors: 265 },
-  { day: "Sat", visitors: 89 },
-  { day: "Sun", visitors: 34 },
-];
-
-export const monthlyData = Array.from({ length: 30 }, (_, i) => ({
-  date: `Jun ${i + 1}`,
-  visitors: Math.floor(Math.random() * 180) + 60,
-}));
-
-export const collegeData: CollegeData[] = Colleges.map((c, i) => ({
-  name: c.replace("College of ", ""),
-  visitors: [342, 287, 198, 423, 156, 211, 134, 178][i],
-  fill: [
-    T.accent,
-    T.green,
-    T.yellow,
-    T.purple,
-    T.cyan,
-    T.red,
-    T.orange,
-    T.lightPurple,
-  ][i],
-}));
-
-export const reasonData = Reasons.map((r, i) => ({
-  name: r,
-  value: [312, 248, 189, 167, 143, 201, 88, 134][i],
-}));
-
-export const PIE_COLORS = [
-  T.accent,
-  T.green,
-  T.yellow,
-  T.purple,
-  T.cyan,
-  T.red,
-  T.orange,
-  T.lightPurple,
-];
-
-export const hourlyData = Array.from({ length: 13 }, (_, i) => ({
-  hour: `${7 + i}:00`,
-  count: [12, 28, 45, 67, 89, 102, 98, 87, 74, 56, 42, 31, 18][i],
-}));
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 export const fmt = (n: number) => n.toLocaleString();
@@ -263,22 +142,6 @@ export const StatCard = ({
       </div>
     )}
   </motion.div>
-);
-
-export const Badge = ({ status }: { status: "active" | "blocked" }) => (
-  <span
-    style={{
-      padding: "2px 10px",
-      borderRadius: 20,
-      fontSize: 11,
-      fontWeight: 600,
-      background: status === "active" ? T.green + "22" : T.red + "22",
-      color: status === "active" ? T.green : T.red,
-      border: `1px solid ${status === "active" ? T.green + "44" : T.red + "44"}`,
-    }}
-  >
-    {status === "active" ? "Active" : "Blocked"}
-  </span>
 );
 
 interface InputProps {

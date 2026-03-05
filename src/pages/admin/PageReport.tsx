@@ -1,8 +1,6 @@
 import {
   Btn,
   Card,
-  PIE_COLORS,
-  collegeData,
   fmt,
   USERS,
   exportToExcel,
@@ -10,8 +8,7 @@ import {
   printReport,
   TD,
   SectionTitle,
-  monthlyData,
-  reasonData,
+  
   Table,
   EmailModal,
 } from "./Admin";
@@ -31,6 +28,10 @@ import {
 } from "recharts";
 import T from "../../utils/theme.ts";
 import User from "../../types/User.ts";
+import monthlyData from "../../mocks/monthlyData.ts";
+import collegeData from "../../mocks/collegeData.ts";
+import reasonData  from "../../mocks/reasonData.ts";
+import { PIE_COLORS } from "../../constants/charts.ts";
 
 const PageReports = () => {
   const [showEmailModal, setShowEmailModal] = useState(false);
