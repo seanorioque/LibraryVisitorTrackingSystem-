@@ -1,11 +1,13 @@
 
-import { T, Btn, Card,PIE_COLORS, collegeData,fmt, USERS,exportToExcel,LOGS, printReport,TD,SectionTitle,monthlyData, reasonData,Table,User,EmailModal} from "./Admin";
+import { Btn, Card,PIE_COLORS, collegeData,fmt, USERS,exportToExcel,LOGS, printReport,TD,SectionTitle,monthlyData, reasonData,Table,EmailModal} from "./Admin";
 import { useState, } from "react";
 import { AnimatePresence } from "framer-motion";
 import {
   BarChart, Bar, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,  AreaChart, Area
 } from "recharts";
+import T from "../../utils/theme.ts"
+import User from "../../types/User.ts"
 
 
 

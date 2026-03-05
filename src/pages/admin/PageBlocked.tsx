@@ -1,8 +1,9 @@
-import { USERS, T, Btn, Card, User,Badge,Modal} from "./Admin";
+import { USERS,  Btn, Card,Badge,Modal} from "./Admin";
 import { useState, } from "react";
 import { AnimatePresence } from "framer-motion";
 import { motion,  } from "framer-motion";
-
+import T from "../../utils/theme.ts"
+import User from "../../types/User.ts"
 
 
 const PageBlocked = () => {

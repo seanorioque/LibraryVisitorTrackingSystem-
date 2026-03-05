@@ -11,7 +11,7 @@ import {
 } from "react-router-dom";
 import { initializeApp } from "firebase/app";
 import AuthRoute from "./hooks/AuthRoute.tsx";
-import { firebaseConfig } from "./hooks/firebase.ts";
+import { firebaseConfig } from "./services/firebase.ts";
 
 initializeApp(firebaseConfig);
 
