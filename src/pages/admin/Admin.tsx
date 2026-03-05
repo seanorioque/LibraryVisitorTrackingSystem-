@@ -13,31 +13,8 @@ import PageReports from "./PageReport.tsx";
 import PageId from "../../types/PageId.ts";
 import BtnVariant from "../../types/BtnVariant.ts";
 import User from "../../types/User.ts";
-
-interface Log {
-  id: number;
-  name: string;
-  email: string;
-  college: string;
-  reason: string;
-  date: string;
-  time: string;
-}
-
-export interface CollegeEntry {
-  id: number;
-  name: string;
-  departments: string[];
-  color: string;
-  visitors: number;
-  active: boolean;
-}
-
-export interface CollegeData {
-  name: string;
-  visitors: number;
-  fill: string;
-}
+import CollegeData from "../../types/CollegeData.ts";
+import Log from "../../types/Log.ts";
 
 // ─── MOCK DATA ─────────────────────────────────────────────────────────────────
 
@@ -140,8 +117,8 @@ export const collegeData: CollegeData[] = Colleges.map((c, i) => ({
     T.purple,
     T.cyan,
     T.red,
-    "#ff9f43",
-    "#a29bfe",
+    T.orange,
+    T.lightPurple,
   ][i],
 }));
 
@@ -157,8 +134,8 @@ export const PIE_COLORS = [
   T.purple,
   T.cyan,
   T.red,
-  "#ff9f43",
-  "#a29bfe",
+  T.orange,
+  T.lightPurple,
 ];
 
 export const hourlyData = Array.from({ length: 13 }, (_, i) => ({

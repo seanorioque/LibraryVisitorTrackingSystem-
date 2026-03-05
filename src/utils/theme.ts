@@ -12,5 +12,7 @@ export const T = {
   text:     "#abb2bf",
   textHi:   "#dde1e8",
   textLo:   "#636d83",
+  orange: "#ff9f43",
+  lightPurple: "#a29bfe"
 };
 export default T; 
