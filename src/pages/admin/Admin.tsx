@@ -19,7 +19,7 @@ import PageLogs from "./PageLogs.tsx";
 export const USERS: User[] = generateUsers();
 export const LOGS: Log[] = generateLogs();
 
-export const printReport = () => window.print();
+
 
 
 export default function App() {
