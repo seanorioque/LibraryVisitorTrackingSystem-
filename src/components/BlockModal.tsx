@@ -1,7 +1,7 @@
 import User from "../types/User"
 import { useState,  } from "react";
 import T from "../utils/theme"
-import { Btn,  } from "../pages/admin/Admin";
+import Btn from "./Btn"
 import Input from "./Input";
 import Modal from "./Modal"
 export const BlockModal = ({

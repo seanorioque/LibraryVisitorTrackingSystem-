@@ -1,4 +1,4 @@
-import { USERS, Select } from "./Admin";
+import { USERS,  } from "./Admin";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import Colleges from "../../utils/College.ts";
@@ -12,6 +12,7 @@ import TD from "../../components/TD.tsx";
 import Table from "../../components/Table.tsx";
 import Card from "../../components/Card.tsx";
 import Btn from "../../components/Btn.tsx"
+import Select from "../../components/Select.tsx";
 
 const PageUsers = () => {
   const [users, setUsers] = useState<User[]>(USERS);

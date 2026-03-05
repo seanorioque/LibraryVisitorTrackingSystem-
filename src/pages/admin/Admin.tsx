@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import React from "react";
-
 import T from "../../utils/theme.ts";
 import Logo from "../../assets/newEraLogo.png";
 import { PageDashboard } from "./PageDashboard.tsx";
@@ -18,51 +16,10 @@ import NAV from "../../constants/nav.ts";
 import RealTimePulse from "../../components/RealTimePulse.tsx";
 import { PAGE_TITLES } from "../../constants/pages.ts";
 import PageLogs from "./PageLogs.tsx";
-import SelectOption from "../../types/SelectOption.ts";
 export const USERS: User[] = generateUsers();
 export const LOGS: Log[] = generateLogs();
 
 export const printReport = () => window.print();
-
-
-
-interface SelectProps {
-  value: string;
-  onChange: (v: string) => void;
-  options: SelectOption[];
-  style?: React.CSSProperties;
-}
-export const Select = ({ value, onChange, options, style }: SelectProps) => (
-  <select
-    value={value}
-    onChange={(e) => onChange(e.target.value)}
-    style={{
-      background: T.elevated,
-      border: `1px solid ${T.border}`,
-      borderRadius: 8,
-      color: T.text,
-      padding: "8px 12px",
-      fontSize: 13,
-      outline: "none",
-      cursor: "pointer",
-      ...style,
-    }}
-  >
-    {options.map((o) => (
-      <option key={o.value} value={o.value}>
-        {o.label}
-      </option>
-    ))}
-  </select>
-);
-
-
-
-
-
-
-
-
 
 
 export default function App() {
