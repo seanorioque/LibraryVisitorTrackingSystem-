@@ -13,7 +13,6 @@ import Log from "../../types/Log.ts";
 import generateUsers from "../../mocks/generateUsers.ts";
 import generateLogs from "../../mocks/generateLogs.ts";
 import NAV from "../../constants/nav.ts";
-import RealTimePulse from "../../components/RealTimePulse.tsx";
 import { PAGE_TITLES } from "../../constants/pages.ts";
 import PageLogs from "./PageLogs.tsx";
 import { getAuth, signOut } from "firebase/auth";
@@ -239,7 +238,6 @@ export default function App() {
             {PAGE_TITLES[page]}
           </span>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <RealTimePulse count={liveCount} />
             <div
               style={{
                 display: "flex",
