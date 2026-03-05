@@ -5,7 +5,7 @@ import {
   LOGS,
   printReport,
   SectionTitle,
-  Table,
+  
 } from "./Admin";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
@@ -31,6 +31,8 @@ import { exportToExcel } from "../../utils/export.ts";
 import { fmt } from "../../utils/format.ts";
 import EmailModal from "../../components/EmailModal.tsx";
 import TD from "../../components/TD.tsx"
+import Table from "../../components/Table.tsx";
+
 
 const PageReports = () => {
   const [showEmailModal, setShowEmailModal] = useState(false);

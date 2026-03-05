@@ -3,8 +3,6 @@ import {
   Btn,
   Card,
   Select,
-  Table,
-
 } from "./Admin";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
@@ -16,6 +14,8 @@ import { exportToExcel } from "../../utils/export.ts";
 import Input from "../../components/Input.tsx";
 import BlockModal from "../../components/BlockModal.tsx";
 import TD from "../../components/TD.tsx"
+import Table from "../../components/Table.tsx";
+
 
 
 const PageUsers = () => {
