@@ -1,7 +1,6 @@
 import {
   USERS,
   Btn,
-  Card,
   SectionTitle,
 } from "./Admin";
 import {
@@ -29,6 +28,8 @@ import reasonData from "../../mocks/reasonData.ts";
 import { PIE_COLORS, hourlyData } from "../../constants/charts.ts";
 import StatCard from "../../components/StatCard.tsx"
 import RealTimePulse from "../../components/RealTimePulse.tsx";
+import Card from "../../components/Card.tsx";
+
 
 export const PageDashboard = ({
   liveCount,

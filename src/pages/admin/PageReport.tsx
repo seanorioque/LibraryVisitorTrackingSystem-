@@ -1,6 +1,5 @@
 import {
   Btn,
-  Card,
   USERS,
   LOGS,
   printReport,
@@ -32,6 +31,8 @@ import { fmt } from "../../utils/format.ts";
 import EmailModal from "../../components/EmailModal.tsx";
 import TD from "../../components/TD.tsx"
 import Table from "../../components/Table.tsx";
+import Card from "../../components/Card.tsx";
+
 
 
 const PageReports = () => {
