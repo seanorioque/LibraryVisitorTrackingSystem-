@@ -2,8 +2,7 @@ import {
   Btn,
   Card,
   Modal,
-  PIE_COLORS,
-  collegeData,
+
   Input,
   fmt,
 } from "./Admin";
@@ -12,6 +11,8 @@ import { AnimatePresence } from "framer-motion";
 import Colleges from "../../utils/College";
 import T from "../../utils/theme.ts";
 import CollegeEntry from "../../types/CollegeEntry.ts";
+import collegeData from "../../mocks/collegeData.ts";
+import { PIE_COLORS } from "../../constants/charts.ts";
 const PageColleges = () => {
   const [colleges, setColleges] = useState<CollegeEntry[]>(
     Colleges.map((c, i) => ({
