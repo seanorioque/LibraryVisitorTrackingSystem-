@@ -1,4 +1,4 @@
-import { Btn, USERS, LOGS, printReport } from "./Admin";
+import {  USERS, LOGS, printReport } from "./Admin";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import {
@@ -26,6 +26,7 @@ import TD from "../../components/TD.tsx";
 import Table from "../../components/Table.tsx";
 import Card from "../../components/Card.tsx";
 import { SectionTitle } from "../../components/SectionTitle.tsx";
+import Btn from "../../components/Btn.tsx"
 
 const PageReports = () => {
   const [showEmailModal, setShowEmailModal] = useState(false);

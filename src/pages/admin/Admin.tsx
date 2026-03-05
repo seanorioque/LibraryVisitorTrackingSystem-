@@ -10,7 +10,6 @@ import PageBlocked from "./PageBlocked.tsx";
 import PageColleges from "./PageColleges.tsx";
 import PageReports from "./PageReport.tsx";
 import PageId from "../../types/PageId.ts";
-import BtnVariant from "../../types/BtnVariant.ts";
 import User from "../../types/User.ts";
 import Log from "../../types/Log.ts";
 import generateUsers from "../../mocks/generateUsers.ts";
@@ -61,55 +60,6 @@ export const Select = ({ value, onChange, options, style }: SelectProps) => (
   </select>
 );
 
-interface BtnProps {
-  children: React.ReactNode;
-  onClick?: (e: React.MouseEvent) => void;
-  variant?: BtnVariant;
-  style?: React.CSSProperties;
-  disabled?: boolean;
-}
-export const Btn = ({
-  children,
-  onClick,
-  variant = "primary",
-  style,
-  disabled,
-}: BtnProps) => {
-  const colors: Record<
-    BtnVariant,
-    { bg: string; color: string; border?: string }
-  > = {
-    primary: { bg: T.accent, color: "#fff" },
-    danger: { bg: T.red, color: "#fff" },
-    success: { bg: T.green, color: "#fff" },
-    ghost: { bg: T.elevated, color: T.text, border: `1px solid ${T.border}` },
-  };
-  const c = colors[variant];
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      style={{
-        background: c.bg,
-        color: c.color,
-        border: c.border ?? "none",
-        padding: "7px 14px",
-        borderRadius: 8,
-        fontSize: 12,
-        fontWeight: 600,
-        cursor: disabled ? "not-allowed" : "pointer",
-        opacity: disabled ? 0.5 : 1,
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 5,
-        whiteSpace: "nowrap",
-        ...style,
-      }}
-    >
-      {children}
-    </button>
-  );
-};
 
 
 
