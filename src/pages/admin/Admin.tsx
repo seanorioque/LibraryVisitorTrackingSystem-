@@ -18,6 +18,7 @@ import NAV from "../../constants/nav.ts";
 import RealTimePulse from "../../components/RealTimePulse.tsx";
 import { PAGE_TITLES } from "../../constants/pages.ts";
 import PageLogs from "./PageLogs.tsx";
+import SelectOption from "../../types/SelectOption.ts";
 export const USERS: User[] = generateUsers();
 export const LOGS: Log[] = generateLogs();
 
@@ -25,11 +26,6 @@ export const printReport = () => window.print();
 
 
 
-
-interface SelectOption {
-  value: string;
-  label: string;
-}
 interface SelectProps {
   value: string;
   onChange: (v: string) => void;
