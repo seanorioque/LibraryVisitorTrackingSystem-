@@ -31,6 +31,8 @@ const Login = () => {
       const email = response.user.email ?? "";
       const domain = email.split("@")[1];
 
+      const adminUIDs = ["GtemhB714wWi3hNl0FzArJtTXv42"];
+
       if (domain !== ALLOWED_DOMAIN) {
         // ✅ Immediately sign them out before they get any access
         await signOut(auth);
@@ -38,9 +40,12 @@ const Login = () => {
         setAuthing(false);
         return;
       }
+      // GtemhB714wWi3hNl0FzArJtTXv42
 
       console.log("User UID:", response.user.uid);
-      navigate("/");
+      adminUIDs.includes(response.user.uid)
+        ? navigate("/")
+        : navigate("/Students");
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "An error occurred");

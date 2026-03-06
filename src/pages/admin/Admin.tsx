@@ -205,7 +205,9 @@ export default function App() {
               width: "100%",
               fontSize: 12,
             }}
-          >{collapsed ? "→" : "Log out"}</button>
+          >
+            {collapsed ? "→" : "Log out"}
+          </button>
         </div>
       </motion.div>
 
