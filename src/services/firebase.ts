@@ -3,11 +3,11 @@
 
 // TODO: Add SDKs for Firebase products that you want to use
 export const firebaseConfig = {
-  apiKey: "AIzaSyBi2fd_MhCOaJvGQkwxnATK_Y691sxIaxQ",
-  authDomain: "libraryvisitortracking.firebaseapp.com",
-  projectId: "libraryvisitortracking",
-  storageBucket: "libraryvisitortracking.firebasestorage.app",
-  messagingSenderId: "875772587268",
-  appId: "1:875772587268:web:51f699d388c9ce5d84b451",
-  measurementId: "G-FP8R503QYR"
+  apiKey:import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_APP_ID
 };

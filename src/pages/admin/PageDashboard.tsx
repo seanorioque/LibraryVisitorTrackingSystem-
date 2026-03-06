@@ -31,8 +31,7 @@ import { SectionTitle } from "../../components/SectionTitle.tsx";
 import Btn from "../../components/Btn.tsx"
 
 export const PageDashboard = ({
-  liveCount,
-  setPage,
+  setPage
 }: {
   liveCount: number;
   setPage: (p: PageId) => void;
