@@ -3,7 +3,7 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
-  signOut,
+  signOut, deleteUser,
 } from "firebase/auth"; // ✅ add signOut
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -30,12 +30,14 @@ const Login = () => {
       const response = await signInWithPopup(auth, provider);
       const email = response.user.email ?? "";
       const domain = email.split("@")[1];
+      const user = response.user; 
 
-      const adminUIDs = ["GtemhB714wWi3hNl0FzArJtTXv42"];
+      const adminUIDs = ["GtemhasdaB714wWi3hNl0FzArJtTXv42"];
 
       if (domain !== ALLOWED_DOMAIN) {
         // ✅ Immediately sign them out before they get any access
         await signOut(auth);
+        await deleteUser(user);
         setError(`Access denied. Please use your @${ALLOWED_DOMAIN} account.`);
         setAuthing(false);
         return;
