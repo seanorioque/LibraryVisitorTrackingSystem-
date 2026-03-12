@@ -4,15 +4,7 @@ import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import T from "../../utils/theme";
-
-const VISIT_REASONS = [
-  { value: "reading", label: " Reading" },
-  { value: "research", label: " Research" },
-  { value: "computer", label: " Use of Computer" },
-  { value: "studying", label: " Studying" },
-  { value: "Returning books", label: " Returning of Books" },
-  { value: "borrowing books", label: " Borrowing of Books" },
-];
+import VISIT_REASONS from "../../types/ReasonsForVisit";
 
 const Students = () => {
   const auth = getAuth();
@@ -36,7 +28,7 @@ const Students = () => {
     try {
       if (!user) throw new Error("No authenticated user found.");
 
-      // ✅ Record the visit log in Firestore
+      // Record the visit log in Firestore
       await addDoc(collection(db, "visits"), {
         uid: user.uid,
         name: user.displayName,
@@ -107,7 +99,6 @@ const Students = () => {
               fontSize: 12,
               letterSpacing: "0.06em",
               textTransform: "uppercase",
-              
             }}
           >
             Reason for Visit
