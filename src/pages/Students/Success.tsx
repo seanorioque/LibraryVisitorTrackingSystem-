@@ -54,7 +54,7 @@ const Success = () => {
           transition={{ delay: 0.3, duration: 0.5 }}
           style={{ color: T.textHi, fontSize: 26, fontWeight: 700 }}
         >
-          Thank you for visiting!
+          Welcome to NEU Library!
         </motion.h1>
 
         <motion.p
