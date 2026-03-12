@@ -3,46 +3,84 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
-  signOut,
+  // signOut, //deleteUser,
 } from "firebase/auth"; // ✅ add signOut
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ConstellationAnimation } from "./LoginAnimation";
-import Logo from "../../components/newEraLogo.png";
+import Logo from "../../assets/newEraLogo.png";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { getAdditionalUserInfo } from "firebase/auth";
 
-const ALLOWED_DOMAIN = "neu.edu.ph"; // ✅ your institutional domain
+//const ALLOWED_DOMAIN = "neu.edu.ph";
+
+const ADMIN_UIDS: string[] = ["gYVxgeNkdkUa3qtT8pRiVmqPpKD3"];
 
 const Login = () => {
   const auth = getAuth();
   const navigate = useNavigate();
-  const [authing, setAuthing] = useState(false);
-  const [error, setError] = useState("");
+  const [authing, setAuthing] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+  const db = getFirestore();
 
   const signInWithGoogle = async () => {
     setAuthing(true);
     setError("");
-    try {
-      const provider = new GoogleAuthProvider();
 
-      // ✅ Force Google to show the account picker every time
+    const provider = new GoogleAuthProvider();
+
+    try {
       provider.setCustomParameters({ prompt: "select_account" });
 
       const response = await signInWithPopup(auth, provider);
-      const email = response.user.email ?? "";
-      const domain = email.split("@")[1];
+      const additionalUserInfo = getAdditionalUserInfo(response);
+      const isNewUser = additionalUserInfo?.isNewUser ?? false;
+      const isAdmin = ADMIN_UIDS.includes(response.user.uid);
+      //const email = response.user.email ?? ""; //handles the institutional account
+      // const domain = email.split("@")[1]; //handles the institutional account
+      //const user = response.user;
 
-      if (domain !== ALLOWED_DOMAIN) {
+      console.log("User UID:", response.user.uid); //getting the user's UID
+      console.log("isNewUser:", isNewUser); // ← add this
+      console.log("isAdmin:", isAdmin); // ← add this
+      /*
+      if (domain !== ALLOWED_DOMAIN) { // Checking if the domain is valid
         // ✅ Immediately sign them out before they get any access
-        await signOut(auth);
+        await signOut(auth); //Redirecting to LoginPage
+        await deleteUser(user); // deleting the user from firebase
         setError(`Access denied. Please use your @${ALLOWED_DOMAIN} account.`);
-        setAuthing(false);
+        setAuthing(false); 
         return;
+      } 
+        */
+
+      // ✅ Create Firestore document for new user
+      // ✅ Create Firestore document for new user
+      // ✅ Create Firestore document for new user (always a student)
+      // ✅ Create Firestore document for new user (always a student)
+      // ✅ Create Firestore document for new user (always a student)
+      if (isNewUser) {
+        console.log("Reached setDoc"); // ← add this
+        await setDoc(doc(db, "users", response.user.uid), {
+          uid: response.user.uid,
+          name: response.user.displayName,
+          email: response.user.email,
+          role: "student",
+          createdAt: new Date(),
+        });
+        console.log("setDoc done"); // ← add this
       }
 
-      console.log("User UID:", response.user.uid);
-      navigate("/");
+      console.log("Reached navigate"); // ← add this
+      const destination = isAdmin
+        ? "/"
+        : isNewUser
+          ? "/RegisterStudent"
+          : "/Students";
+      console.log("Navigating to:", destination);
+      navigate(destination);
     } catch (err) {
-      console.error(err);
+      console.error("ERROR:", err);
       setError(err instanceof Error ? err.message : "An error occurred");
       setAuthing(false);
     }
@@ -89,7 +127,7 @@ const Login = () => {
               className="text-white text-2xl font-bold tracking-tight"
               style={{ fontFamily: "Georgia, serif" }}
             >
-              Welcome back
+              Welcome
             </h1>
             <p className="mt-2 text-xs text-blue-200/40 font-mono tracking-wide">
               Sign in with your university account
