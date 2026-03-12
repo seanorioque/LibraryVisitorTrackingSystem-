@@ -3,14 +3,14 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
-  signOut, deleteUser,
+ // signOut, //deleteUser,
 } from "firebase/auth"; // ✅ add signOut
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ConstellationAnimation } from "./LoginAnimation";
 import Logo from "../../assets/newEraLogo.png";
 
-const ALLOWED_DOMAIN = "neu.edu.ph"; // ✅ your institutional domain
+//const ALLOWED_DOMAIN = "neu.edu.ph"; // ✅ your institutional domain
 
 const Login = () => {
   const auth = getAuth();
@@ -28,20 +28,20 @@ const Login = () => {
       provider.setCustomParameters({ prompt: "select_account" });
 
       const response = await signInWithPopup(auth, provider);
-      const email = response.user.email ?? "";
-      const domain = email.split("@")[1];
-      const user = response.user; 
+     // const email = response.user.email ?? "";
+     //const domain = email.split("@")[1];
+      //const user = response.user; 
 
       const adminUIDs = ["GtemhasdaB714wWi3hNl0FzArJtTXv42"];
 
-      if (domain !== ALLOWED_DOMAIN) {
+      /*if (domain !== ALLOWED_DOMAIN) {
         // ✅ Immediately sign them out before they get any access
         await signOut(auth);
         await deleteUser(user);
         setError(`Access denied. Please use your @${ALLOWED_DOMAIN} account.`);
         setAuthing(false);
         return;
-      }
+      }*/
       // GtemhB714wWi3hNl0FzArJtTXv42
 
       console.log("User UID:", response.user.uid);
