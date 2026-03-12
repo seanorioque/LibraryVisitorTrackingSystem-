@@ -1,5 +1,5 @@
 const Student = ()=> {
-  return "asdas"
+  return "Old Student"
 }
 
 export default Student
