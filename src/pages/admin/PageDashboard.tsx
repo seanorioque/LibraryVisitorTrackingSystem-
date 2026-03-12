@@ -26,14 +26,12 @@ import collegeData from "../../mocks/collegeData.ts";
 import reasonData from "../../mocks/reasonData.ts";
 import { PIE_COLORS, hourlyData } from "../../constants/charts.ts";
 import StatCard from "../../components/StatCard.tsx"
-import RealTimePulse from "../../components/RealTimePulse.tsx";
 import Card from "../../components/Card.tsx";
 import { SectionTitle } from "../../components/SectionTitle.tsx";
 import Btn from "../../components/Btn.tsx"
 
 export const PageDashboard = ({
-  liveCount,
-  setPage,
+  setPage
 }: {
   liveCount: number;
   setPage: (p: PageId) => void;
@@ -90,7 +88,7 @@ export const PageDashboard = ({
           flexWrap: "wrap",
         }}
       >
-        <RealTimePulse count={liveCount} />
+        
         <div style={{ flex: 1 }} />
         <Btn variant="ghost" onClick={() => setPage("users")}>
           👤 Manage Users
