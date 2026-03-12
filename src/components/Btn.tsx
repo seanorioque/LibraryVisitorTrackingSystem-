@@ -34,10 +34,10 @@ export const Btn = ({
         opacity: disabled ? 0.5 : 1,
         display: "inline-flex",
         alignItems: "center",
-        justifyContent: "center", // ← add this
+        justifyContent: "center", 
         gap: 5,
         whiteSpace: "nowrap",
-        minWidth: 80, // ← add this
+        minWidth: 80, 
         ...style,
       }}
     >

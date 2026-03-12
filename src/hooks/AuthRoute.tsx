@@ -20,15 +20,15 @@ const AuthRoute: React.FunctionComponent<IAuthRouteProps> = ({ children }) => {
         setAuthenticated(false);
         navigate('/login', { replace: true });
       }
-      setLoading(false); // ✅ Only stop loading AFTER Firebase responds
+      setLoading(false); //  Only stop loading AFTER Firebase responds
     });
     return () => unsubscribe();
   }, [auth, navigate]);
 
-  // ✅ Show nothing while Firebase is still resolving — prevents flash redirect
+  //  Show nothing while Firebase is still resolving — prevents flash redirect
   if (loading) return null;
 
-  // ✅ Only render children once confirmed authenticated
+  //  Only render children once confirmed authenticated
   if (!authenticated) return null;
 
   return <>{children}</>;
