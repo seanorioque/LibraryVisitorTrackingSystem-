@@ -238,11 +238,7 @@ export default function App() {
           <span style={{ color: T.textHi, fontWeight: 700, fontSize: 14 }}>
             {PAGE_TITLES[page]}
           </span>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            
-              
-            
-          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}></div>
         </div>
 
         <div style={{ flex: 1, padding: 24, overflowY: "auto" }}>

@@ -27,12 +27,12 @@ const RegisterStudent = () => {
       const user = auth.currentUser;
       if (!user) throw new Error("No authenticated user found.");
 
-      // ✅ Update the Firestore document with the selected college
+
       await updateDoc(doc(db, "users", user.uid), {
         college: selectedCollege,
       });
 
-      navigate("/Students"); // ← redirect to student page after registration
+      navigate("/Students"); 
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "An error occurred.");
@@ -68,7 +68,6 @@ const RegisterStudent = () => {
           gap: 24,
         }}
       >
-        {/* Header */}
         <div style={{ textAlign: "center" }}>
           <h1
             style={{
@@ -85,7 +84,6 @@ const RegisterStudent = () => {
           </p>
         </div>
 
-        {/* College Selector */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <label
             style={{
@@ -123,7 +121,6 @@ const RegisterStudent = () => {
           </select>
         </div>
 
-        {/* Error message */}
         {error && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -142,7 +139,6 @@ const RegisterStudent = () => {
           </motion.div>
         )}
 
-        {/* Submit Button */}
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}

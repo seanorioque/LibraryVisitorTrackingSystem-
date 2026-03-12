@@ -14,6 +14,7 @@ import {
 import { initializeApp } from "firebase/app";
 import AuthRoute from "./hooks/AuthRoute.tsx";
 import { firebaseConfig } from "./services/firebase.ts";
+import Success from "./pages/Students/Success.tsx";
 
 initializeApp(firebaseConfig);
 
@@ -42,6 +43,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             </AuthRoute>
           }
         />
+        <Route path="/success" element={<Success />} />
 
         {/* Redirect unknown */}
         <Route path="*" element={<Navigate to="/login" replace />} />
