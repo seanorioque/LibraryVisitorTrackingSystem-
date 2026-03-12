@@ -2,14 +2,7 @@ import T from "../utils/theme";
 import { fmt } from "../utils/format";
 import StatCardProps from "../types/StatCardProps";
 import { motion } from "framer-motion";
-export const StatCard = ({
-  icon,
-  label,
-  value,
-  sub,
-  color,
-  trend,
-}: StatCardProps) => (
+export const StatCard = ({ label, value, sub, trend }: StatCardProps) => (
   <motion.div
     initial={{ opacity: 0, y: 16 }}
     animate={{ opacity: 1, y: 0 }}
@@ -55,20 +48,6 @@ export const StatCard = ({
           </div>
         )}
       </div>
-      <div
-        style={{
-          width: 44,
-          height: 44,
-          borderRadius: 10,
-          background: color + "22",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 20,
-        }}
-      >
-        {icon}
-      </div>
     </div>
     {trend !== undefined && (
       <div
@@ -88,4 +67,4 @@ export const StatCard = ({
     )}
   </motion.div>
 );
-export default StatCard
+export default StatCard;

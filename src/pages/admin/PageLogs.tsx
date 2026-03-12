@@ -1,4 +1,3 @@
-
 import { exportToExcel } from "../../utils/export.ts";
 import Colleges from "../../utils/College.ts";
 import { useState,  } from "react";
@@ -84,13 +83,13 @@ const PageLogs = () => {
             )
           }
         >
-          📥 Export Excel
+          Export Excel
         </Btn>
         <Btn variant="ghost" onClick={printReport}>
-          🖨️ Print
+          Print
         </Btn>
         <Btn variant="ghost" onClick={() => setShowEmailModal(true)}>
-          📧 Email
+          Email
         </Btn>
         <span style={{ color: T.textLo, fontSize: 12 }}>
           {filtered.length} records

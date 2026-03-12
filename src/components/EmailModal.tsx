@@ -8,7 +8,7 @@ export const EmailModal = ({ onClose }: { onClose: () => void }) => {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   return (
-    <Modal title="📧 Email Report Summary" onClose={onClose}>
+    <Modal title=" Email Report Summary" onClose={onClose}>
       {sent ? (
         <div style={{ textAlign: "center", padding: "20px 0" }}>
           <div style={{ fontSize: 40, marginBottom: 10 }}>✅</div>

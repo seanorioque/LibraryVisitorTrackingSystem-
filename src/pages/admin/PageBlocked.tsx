@@ -112,7 +112,7 @@ const PageBlocked = () => {
                     unblock(u.id);
                   }}
                 >
-                  ✅ Unblock
+                  Unblock
                 </Btn>
               </div>
             </motion.div>
@@ -123,7 +123,7 @@ const PageBlocked = () => {
       <AnimatePresence>
         {selected && (
           <Modal
-            title="👤 Blocked User Details"
+            title="Blocked User Details"
             onClose={() => setSelected(null)}
           >
             <div
@@ -184,7 +184,7 @@ const PageBlocked = () => {
                   Close
                 </Btn>
                 <Btn variant="success" onClick={() => unblock(selected.id)}>
-                  ✅ Unblock User
+                  Unblock User
                 </Btn>
               </div>
             </div>

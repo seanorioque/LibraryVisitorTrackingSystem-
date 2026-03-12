@@ -1,7 +1,6 @@
-
 import BtnProps from "../types/BtnProps";
 import BtnVariant from "../types/BtnVariant";
-import T from "../utils/theme"
+import T from "../utils/theme";
 export const Btn = ({
   children,
   onClick,
@@ -35,8 +34,10 @@ export const Btn = ({
         opacity: disabled ? 0.5 : 1,
         display: "inline-flex",
         alignItems: "center",
+        justifyContent: "center", // ← add this
         gap: 5,
         whiteSpace: "nowrap",
+        minWidth: 80, // ← add this
         ...style,
       }}
     >
@@ -44,4 +45,4 @@ export const Btn = ({
     </button>
   );
 };
-export default Btn
+export default Btn;

@@ -46,18 +46,18 @@ const PageReports = () => {
             )
           }
         >
-          📥 Export to Excel
+          Export to Excel
         </Btn>
         <Btn variant="ghost" onClick={printReport}>
-          🖨️ Print Report
+          Print Report
         </Btn>
         <Btn variant="ghost" onClick={() => setShowEmailModal(true)}>
-          📧 Email Summary
+          Email Summary
         </Btn>
       </div>
 
       <Card>
-        <SectionTitle>📅 Monthly Traffic — June 2025</SectionTitle>
+        <SectionTitle>Monthly Traffic — June 2025</SectionTitle>
         <ResponsiveContainer width="100%" height={220}>
           <AreaChart data={monthlyData}>
             <defs>
@@ -101,7 +101,7 @@ const PageReports = () => {
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
         <Card>
-          <SectionTitle>🏆 Most Frequent by College</SectionTitle>
+          <SectionTitle> Most Frequent by College</SectionTitle>
           {topColleges.map((c, i) => (
             <div
               key={c.name}
@@ -166,7 +166,7 @@ const PageReports = () => {
         </Card>
 
         <Card>
-          <SectionTitle>📋 Top Visit Reasons</SectionTitle>
+          <SectionTitle> Top Visit Reasons</SectionTitle>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={reasonData} layout="vertical" barSize={12}>
               <CartesianGrid
@@ -207,7 +207,7 @@ const PageReports = () => {
       </div>
 
       <Card>
-        <SectionTitle>👑 Most Frequent Visitors</SectionTitle>
+        <SectionTitle> Most Frequent Visitors</SectionTitle>
         <Table
           columns={[
             "Rank",

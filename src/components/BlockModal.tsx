@@ -15,7 +15,7 @@ export const BlockModal = ({
 }) => {
   const [reason, setReason] = useState("");
   return (
-    <Modal title={`🚫 Block ${user.name}?`} onClose={onClose}>
+    <Modal title={` Block ${user.name}?`} onClose={onClose}>
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
         <div style={{ color: T.text, fontSize: 13 }}>
           This will prevent the user from accessing the library system. Please
