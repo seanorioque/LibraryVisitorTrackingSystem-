@@ -61,7 +61,7 @@ const PageUsers = () => {
         }}
       >
         <Input
-          placeholder="🔍 Search by name or email..."
+          placeholder="Search by name or email..."
           value={search}
           onChange={setSearch}
           style={{ flex: 1, minWidth: 200 }}
@@ -133,14 +133,14 @@ const PageUsers = () => {
                       setConfirmModal({ user: u, action: "block" })
                     }
                   >
-                    🚫 Block
+                    Block
                   </Btn>
                 ) : (
                   <Btn
                     variant="success"
                     onClick={() => toggle(u.id, "unblock")}
                   >
-                    ✅ Unblock
+                    Unblock
                   </Btn>
                 )}
               </TD>

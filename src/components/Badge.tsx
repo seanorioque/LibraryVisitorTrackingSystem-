@@ -1,4 +1,4 @@
-import T from "../utils/theme"
+import T from "../utils/theme";
 export const Badge = ({ status }: { status: "active" | "blocked" }) => (
   <span
     style={{
@@ -9,10 +9,14 @@ export const Badge = ({ status }: { status: "active" | "blocked" }) => (
       background: status === "active" ? T.green + "22" : T.red + "22",
       color: status === "active" ? T.green : T.red,
       border: `1px solid ${status === "active" ? T.green + "44" : T.red + "44"}`,
+      minWidth: 60, 
+      display: "inline-flex", 
+      alignItems: "center",  
+      justifyContent: "center",
     }}
   >
     {status === "active" ? "Active" : "Blocked"}
   </span>
-); 
+);
 
-export default Badge
+export default Badge;

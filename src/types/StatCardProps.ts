@@ -1,5 +1,5 @@
 interface StatCardProps {
-  icon: string;
+
   label: string;
   value: number;
   sub?: string;

@@ -149,7 +149,6 @@ export default function App() {
                   if (!active) e.currentTarget.style.background = "transparent";
                 }}
               >
-                <span style={{ fontSize: 15, flexShrink: 0 }}>{n.icon}</span>
                 <AnimatePresence>
                   {!collapsed && (
                     <motion.span
@@ -240,33 +239,9 @@ export default function App() {
             {PAGE_TITLES[page]}
           </span>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                padding: "4px 10px",
-                background: T.elevated,
-                borderRadius: 20,
-                border: `1px solid ${T.border}`,
-              }}
-            >
-              <div
-                style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: "50%",
-                  background: T.accent + "33",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 11,
-                }}
-              >
-                🔑
-              </div>
-              <span style={{ fontSize: 11, color: T.textLo }}>Admin</span>
-            </div>
+            
+              
+            
           </div>
         </div>
 

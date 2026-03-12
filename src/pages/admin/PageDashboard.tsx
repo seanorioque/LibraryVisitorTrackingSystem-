@@ -1,7 +1,4 @@
-import {
-  USERS,
-  
-} from "./Admin";
+import { USERS } from "./Admin";
 import {
   BarChart,
   Bar,
@@ -25,13 +22,13 @@ import weeklyData from "../../mocks/weeklyData.ts";
 import collegeData from "../../mocks/collegeData.ts";
 import reasonData from "../../mocks/reasonData.ts";
 import { PIE_COLORS, hourlyData } from "../../constants/charts.ts";
-import StatCard from "../../components/StatCard.tsx"
+import StatCard from "../../components/StatCard.tsx";
 import Card from "../../components/Card.tsx";
 import { SectionTitle } from "../../components/SectionTitle.tsx";
-import Btn from "../../components/Btn.tsx"
+import Btn from "../../components/Btn.tsx";
 
 export const PageDashboard = ({
-  setPage
+  setPage,
 }: {
   liveCount: number;
   setPage: (p: PageId) => void;
@@ -51,28 +48,24 @@ export const PageDashboard = ({
         }}
       >
         <StatCard
-          icon="👥"
           label="Total Visitors Today"
           value={todayTotal}
           color={T.accent}
           trend={12}
         />
         <StatCard
-          icon="📅"
           label="This Week"
           value={weekTotal}
           color={T.green}
           trend={5}
         />
         <StatCard
-          icon="🗓️"
           label="This Month"
           value={monthTotal}
           color={T.purple}
           sub="June 2025"
         />
         <StatCard
-          icon="🚫"
           label="Blocked Users"
           value={blockedCount}
           color={T.red}
@@ -88,22 +81,21 @@ export const PageDashboard = ({
           flexWrap: "wrap",
         }}
       >
-        
         <div style={{ flex: 1 }} />
         <Btn variant="ghost" onClick={() => setPage("users")}>
-          👤 Manage Users
+          Manage Users
         </Btn>
         <Btn variant="ghost" onClick={() => setPage("logs")}>
-          📋 View Logs
+          View Logs
         </Btn>
         <Btn variant="ghost" onClick={() => setPage("reports")}>
-          📊 Reports
+          Reports
         </Btn>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
         <Card>
-          <SectionTitle>📈 Daily Traffic (This Week)</SectionTitle>
+          <SectionTitle>Daily Traffic (This Week)</SectionTitle>
           <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={weeklyData}>
               <defs>
@@ -145,7 +137,7 @@ export const PageDashboard = ({
         </Card>
 
         <Card>
-          <SectionTitle>🏛️ Visitors per College</SectionTitle>
+          <SectionTitle> Visitors per College</SectionTitle>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={collegeData} layout="vertical" barSize={10}>
               <CartesianGrid
@@ -187,7 +179,7 @@ export const PageDashboard = ({
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
         <Card>
-          <SectionTitle>⏰ Hourly Traffic (Today)</SectionTitle>
+          <SectionTitle> Hourly Traffic (Today)</SectionTitle>
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={hourlyData}>
               <CartesianGrid strokeDasharray="3 3" stroke={T.border} />
@@ -223,7 +215,7 @@ export const PageDashboard = ({
         </Card>
 
         <Card>
-          <SectionTitle>📝 Top Reasons for Visit</SectionTitle>
+          <SectionTitle> Top Reasons for Visit</SectionTitle>
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie

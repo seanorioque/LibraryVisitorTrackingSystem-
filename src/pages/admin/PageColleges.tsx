@@ -164,7 +164,7 @@ const PageColleges = () => {
       <AnimatePresence>
         {addDeptModal !== null && (
           <Modal
-            title="➕ Add Department"
+            title=" Add Department"
             onClose={() => setAddDeptModal(null)}
           >
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
