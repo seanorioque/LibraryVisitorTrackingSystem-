@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./pages/admin/Admin.tsx";
 import Login from "./pages/Login/Login.tsx";
+import Students from "./pages/Students/Students.tsx";
+import RegisterStudent from "./pages/Students/RegisterStudent.tsx";
 import "./index.css";
 import {
   BrowserRouter as Router,
@@ -19,7 +21,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Router>
       <Routes>
+        {/* Public */}
         <Route path="/login" element={<Login />} />
+        <Route path="/RegisterStudent" element={<RegisterStudent />} />
+
+        {/* Protected */}
         <Route
           path="/"
           element={
@@ -28,7 +34,16 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             </AuthRoute>
           }
         />
-        {/* Redirect all unknown routes to /login */}
+        <Route
+          path="/Students"
+          element={
+            <AuthRoute>
+              <Students />
+            </AuthRoute>
+          }
+        />
+
+        {/* Redirect unknown */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>

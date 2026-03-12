@@ -13,16 +13,22 @@ import Log from "../../types/Log.ts";
 import generateUsers from "../../mocks/generateUsers.ts";
 import generateLogs from "../../mocks/generateLogs.ts";
 import NAV from "../../constants/nav.ts";
-import RealTimePulse from "../../components/RealTimePulse.tsx";
 import { PAGE_TITLES } from "../../constants/pages.ts";
 import PageLogs from "./PageLogs.tsx";
+import { getAuth, signOut } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+
 export const USERS: User[] = generateUsers();
 export const LOGS: Log[] = generateLogs();
 
-
-
-
 export default function App() {
+  const auth = getAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    navigate("/login");
+  };
   const [page, setPage] = useState<PageId>("dashboard");
   const [liveCount, setLiveCount] = useState(23);
   const [collapsed, setCollapsed] = useState(false);
@@ -184,6 +190,25 @@ export default function App() {
             {collapsed ? "→" : "← Collapse"}
           </button>
         </div>
+        <div
+          style={{ padding: "10px 12px", borderTop: `1px solid ${T.border}` }}
+        >
+          <button
+            onClick={handleLogout}
+            style={{
+              background: T.elevated,
+              border: `1px solid ${T.border}`,
+              borderRadius: 8,
+              color: "#ff0e0e",
+              padding: "6px 10px",
+              cursor: "pointer",
+              width: "100%",
+              fontSize: 12,
+            }}
+          >
+            {collapsed ? "→" : "Log out"}
+          </button>
+        </div>
       </motion.div>
 
       {/* Main */}
@@ -215,7 +240,6 @@ export default function App() {
             {PAGE_TITLES[page]}
           </span>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <RealTimePulse count={liveCount} />
             <div
               style={{
                 display: "flex",
