@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./pages/admin/Admin.tsx";
 import Login from "./pages/Login/Login.tsx";
 import Students from "./pages/Students/Students.tsx";
+import RegisterStudent from "./pages/Students/RegisterStudent.tsx";
 import "./index.css";
 import {
   BrowserRouter as Router,
@@ -22,6 +23,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <Routes>
         {/* Public */}
         <Route path="/login" element={<Login />} />
+        <Route path="/RegisterStudent" element={<RegisterStudent />} />
 
         {/* Protected */}
         <Route
@@ -32,9 +34,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             </AuthRoute>
           }
         />
-
         <Route
-          path="/students"
+          path="/Students"
           element={
             <AuthRoute>
               <Students />
