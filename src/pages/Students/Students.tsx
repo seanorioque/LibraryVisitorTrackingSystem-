@@ -6,6 +6,10 @@ import {
   addDoc,
   doc,
   getDoc,
+  getDocs,
+  query,
+  where,
+  Timestamp,
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -34,21 +38,45 @@ const Students = () => {
     try {
       if (!user) throw new Error("No authenticated user found.");
 
-      // Record the visit log in Firestore
+      // ── Check for duplicate visit today ──
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const todayEnd = new Date();
+      todayEnd.setHours(23, 59, 59, 999);
+
+      const dupeSnap = await getDocs(
+        query(
+          collection(db, "visits"),
+          where("uid", "==", user.uid),
+          where("timestamp", ">=", Timestamp.fromDate(todayStart)),
+          where("timestamp", "<=", Timestamp.fromDate(todayEnd)),
+        ),
+      );
+
+      if (!dupeSnap.empty) {
+        setError("You have already logged a visit today.");
+        setLoading(false);
+        return;
+      }
+
+      // ── Fetch college + studentId ──
       const userDoc = await getDoc(doc(db, "users", user.uid));
       const college = userDoc.exists() ? userDoc.data().college : "Unknown";
-      const studentId = userDoc.exists() ? userDoc.data().studentId ?? "—" : "—"; // ← add
+      const studentId = userDoc.exists() ? userDoc.data().studentId ?? "—" : "—";
 
+      // ── Save visit ──
+      const selected = VISIT_REASONS.find((r) => r.value === selectedReason);
       await addDoc(collection(db, "visits"), {
         uid: user.uid,
         name: user.displayName,
         email: user.email,
-        reason: selectedReason,
-        college, 
+        reason: selected?.label ?? selectedReason,
+        college,
         studentId,
         timestamp: new Date(),
       });
-      navigate("/success"); // ← redirect to success page after logging
+
+      navigate("/success");
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "An error occurred.");

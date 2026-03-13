@@ -162,11 +162,12 @@ const PageUsers = () => {
           onClick={() =>
             exportToExcel(
               filtered as unknown as Record<string, unknown>[],
-              "users-export",
+              "NEU_LIBRARY_LOG",
+              "users",
             )
           }
         >
-          ⬇ Export
+          Export
         </Btn>
         <span style={{ color: T.textLo, fontSize: 12 }}>
           {loading ? "Loading..." : `${filtered.length} users`}

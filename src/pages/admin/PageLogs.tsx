@@ -143,7 +143,8 @@ const PageLogs = () => {
           onClick={() =>
             exportToExcel(
               filtered as unknown as Record<string, unknown>[],
-              "visit-logs-export",
+              "NEU-LIBRARY-VISIT-LOGS",
+              "logs",
             )
           }
         >
