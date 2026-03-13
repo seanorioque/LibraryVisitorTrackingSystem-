@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./pages/admin/Admin.tsx";
 import Login from "./pages/Login/Login.tsx";
 import Students from "./pages/Students/Students.tsx";
-import RegisterStudent from "./pages/Students/RegisterStudent.tsx";
+import RegisterStudent from "./pages/Students/StudentRegistration.tsx";
 import "./index.css";
 import {
   BrowserRouter as Router,
