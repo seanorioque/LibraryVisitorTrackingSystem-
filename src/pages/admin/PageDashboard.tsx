@@ -144,9 +144,9 @@ export const PageDashboard = ({
       })),
     );
 
-    // ── Hourly Traffic (today) ──
+    //Library Opening Hours
     const hourMap: Record<string, number> = {};
-    for (let h = 7; h <= 20; h++) {
+    for (let h = 8; h <= 17; h++) {
       hourMap[`${h}:00`] = 0;
     }
     visits.forEach((v) => {
