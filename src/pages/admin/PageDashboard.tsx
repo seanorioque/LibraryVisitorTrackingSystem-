@@ -201,7 +201,7 @@ export const PageDashboard = ({
           label="Blocked Users"
           value={blockedCount}
           color={T.red}
-          sub="Click to manage"
+          sub=""
         />
       </div>
 
