@@ -70,7 +70,6 @@ const COLLEGE_COLORS = [
   "#f97316",
 ];
 
-
 // ── Component ──────────────────────────────────────────────
 export const PageDashboard = ({
   setPage,
@@ -89,17 +88,26 @@ export const PageDashboard = ({
   const [collegeData, setCollegeData] = useState<CollegeEntry[]>([]);
   const [hourlyData, setHourlyData] = useState<HourlyEntry[]>([]);
   const [reasonData, setReasonData] = useState<ReasonEntry[]>([]);
-  const [blockedCount] = useState(0);
+  const [blockedCount, setBlockedCount] = useState(0);
   // ── Realtime listener ──
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, "visits"), (snap) => {
-      const data = snap.docs.map((d) => d.data() as Visit);
-      setVisits(data);
+    const unsub = onSnapshot(collection(db, "users"), (snap) => {
+      const blocked = snap.docs.filter(
+        (d) => d.data().status === "blocked",
+      ).length;
+      setBlockedCount(blocked);
     });
     return () => unsub();
   }, [db]);
 
   // ── Derive chart data from visits ──
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, "visits"), (snap) => {
+      const data = snap.docs.map((d) => d.data() as Visit);
+      setVisits(data); // ← this is what uses setVisits
+    });
+    return () => unsub();
+  }, [db]);
   useEffect(() => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
