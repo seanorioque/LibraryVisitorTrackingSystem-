@@ -89,7 +89,7 @@ export const PageDashboard = ({
   const [collegeData, setCollegeData] = useState<CollegeEntry[]>([]);
   const [hourlyData, setHourlyData] = useState<HourlyEntry[]>([]);
   const [reasonData, setReasonData] = useState<ReasonEntry[]>([]);
-  const [blockedCount, setBlockedCount] = useState(0);
+  const [blockedCount] = useState(0);
   // ── Realtime listener ──
   useEffect(() => {
     const unsub = onSnapshot(collection(db, "visits"), (snap) => {
