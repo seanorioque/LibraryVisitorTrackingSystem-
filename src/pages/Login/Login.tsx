@@ -21,74 +21,85 @@ const Login = () => {
   const db = getFirestore();
 
   const signInWithGoogle = async () => {
-    setAuthing(true);
-    setError("");
+  setAuthing(true);
+  setError("");
 
-    const provider = new GoogleAuthProvider();
+  const provider = new GoogleAuthProvider();
 
-    try {
-      provider.setCustomParameters({ prompt: "select_account" });
+  try {
+    provider.setCustomParameters({ prompt: "select_account" });
 
-      const response = await signInWithPopup(auth, provider);
-      const additionalUserInfo = getAdditionalUserInfo(response);
-      const isNewUser = additionalUserInfo?.isNewUser ?? false;
-      const isAdmin = ADMIN_UIDS.includes(response.user.uid);
+    const response = await signInWithPopup(auth, provider);
 
-      console.log("User UID:", response.user.uid);
-      console.log("isNewUser:", isNewUser);
-      console.log("isAdmin:", isAdmin);
+    // ✅ Domain check — must be @neu.edu.ph
+   // const email = response.user.email ?? "";
+    //if (!email.endsWith("@neu.edu.ph")) {
+     // await auth.currentUser?.delete(); // remove from Firebase Auth
+     // await auth.signOut();
+     // setError("Only @neu.edu.ph accounts are allowed. Please use your university email.");
+      //setAuthing(false);
+     // return;
+   // }
 
-      // ✅ Check if user is blocked
-      const userRef = doc(db, "users", response.user.uid);
-      const userSnap = await getDoc(userRef);
+    const additionalUserInfo = getAdditionalUserInfo(response);
+    const isNewUser = additionalUserInfo?.isNewUser ?? false;
+    const isAdmin = ADMIN_UIDS.includes(response.user.uid);
 
-      if (userSnap.exists() && userSnap.data().status === "blocked") {
-        await auth.signOut();
-        setError(
-          `Your account has been blocked. Reason: ${
-            userSnap.data().blockReason ?? "Please contact the library admin."
-          }`
-        );
-        setAuthing(false);
-        return;
-      }
+    console.log("User UID:", response.user.uid);
+    console.log("isNewUser:", isNewUser);
+    console.log("isAdmin:", isAdmin);
 
-      // ✅ Create Firestore document for new user
-      if (isNewUser) {
-        console.log("Reached setDoc");
-        await setDoc(doc(db, "users", response.user.uid), {
-          uid: response.user.uid,
-          name: response.user.displayName,
-          email: response.user.email,
-          role: "student",
-          status: "active",
-          blockReason: null,
-          createdAt: new Date(),
-        });
-        console.log("setDoc done");
-      }
+    // ✅ Check if user is blocked
+    const userRef = doc(db, "users", response.user.uid);
+    const userSnap = await getDoc(userRef);
 
-      // ✅ Check if registration is incomplete (missing college or studentId)
-      const userData = userSnap.exists() ? userSnap.data() : null;
-      const isIncomplete =
-        !isAdmin &&
-        !isNewUser &&
-        (!userData?.college || !userData?.studentId);
-
-      console.log("Reached navigate");
-      const destination = isAdmin
-        ? "/"
-        : isNewUser || isIncomplete
-        ? "/RegisterStudent"
-        : "/Students";
-      console.log("Navigating to:", destination);
-      navigate(destination);
-    } catch (err) {
-      console.error("ERROR:", err);
-      setError(err instanceof Error ? err.message : "An error occurred");
+    if (userSnap.exists() && userSnap.data().status === "blocked") {
+      await auth.signOut();
+      setError(
+        `Your account has been blocked. Reason: ${
+          userSnap.data().blockReason ?? "Please contact the library admin."
+        }`
+      );
       setAuthing(false);
+      return;
     }
-  };
+
+    // ✅ Create Firestore document for new user
+    if (isNewUser) {
+      console.log("Reached setDoc");
+      await setDoc(doc(db, "users", response.user.uid), {
+        uid: response.user.uid,
+        name: response.user.displayName,
+        email: response.user.email,
+        role: "student",
+        status: "active",
+        blockReason: null,
+        createdAt: new Date(),
+      });
+      console.log("setDoc done");
+    }
+
+    // ✅ Check if registration is incomplete (missing college or studentId)
+    const userData = userSnap.exists() ? userSnap.data() : null;
+    const isIncomplete =
+      !isAdmin &&
+      !isNewUser &&
+      (!userData?.college || !userData?.studentId);
+
+    console.log("Reached navigate");
+    const destination = isAdmin
+      ? "/"
+      : isNewUser || isIncomplete
+      ? "/RegisterStudent"
+      : "/Students";
+    console.log("Navigating to:", destination);
+    navigate(destination);
+  } catch (err) {
+    console.error("ERROR:", err);
+    setError(err instanceof Error ? err.message : "An error occurred");
+    setAuthing(false);
+  }
+};
 
   return (
     <div className="w-full h-screen relative overflow-hidden">

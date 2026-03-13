@@ -152,9 +152,6 @@ const PageReports = () => {
         <Btn variant="ghost" onClick={() => printReport("print-reports-charts")}>
           Print Report
         </Btn>
-        <Btn variant="ghost" onClick={() => setShowEmailModal(true)}>
-          Email Summary
-        </Btn>
       </div>
 
       {/* ── Printable section ── */}

@@ -9,7 +9,6 @@ import {
   orderBy,
 } from "firebase/firestore";
 import { AnimatePresence } from "framer-motion";
-import Colleges from "../../utils/College.ts";
 import T from "../../utils/theme.ts";
 import Badge from "../../components/Badge.tsx";
 import { exportToExcel } from "../../utils/export.ts";
@@ -55,6 +54,17 @@ const PageUsers = () => {
     );
     return () => unsub();
   }, [db]);
+  // ── Realtime: colleges from Firestore ──
+useEffect(() => {
+  const unsub = onSnapshot(collection(db, "colleges"), (snap) => {
+    const names = snap.docs
+      .map((d) => d.data().name as string)
+      .filter(Boolean)
+      .sort();
+    setColleges(names);
+  });
+  return () => unsub();
+}, [db]);
 
   // ── Realtime: visits collection → derive visit counts + last visit ──
   useEffect(() => {
@@ -107,7 +117,7 @@ const PageUsers = () => {
     });
     setConfirmModal(null);
   };
-
+  const [colleges, setColleges] = useState<string[]>([]);
   // ── Filter ──
   const filtered = users.filter((u) => {
     const q = search.toLowerCase();
@@ -143,7 +153,7 @@ const PageUsers = () => {
           onChange={setFilterCollege}
           options={[
             { value: "all", label: "All Colleges" },
-            ...Colleges.map((c) => ({ value: c, label: c })),
+            ...colleges.map((c) => ({ value: c, label: c })),
           ]}
           style={{ minWidth: 180 }}
         />
@@ -169,9 +179,6 @@ const PageUsers = () => {
         >
           Export
         </Btn>
-        <span style={{ color: T.textLo, fontSize: 12 }}>
-          {loading ? "Loading..." : `${filtered.length} users`}
-        </span>
       </div>
 
       {/* ── Table ── */}

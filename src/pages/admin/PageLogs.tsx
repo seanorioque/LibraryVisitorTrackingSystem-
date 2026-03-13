@@ -150,12 +150,7 @@ const PageLogs = () => {
         <Btn variant="ghost" onClick={() => printReport("print-logs-table")}>
           Print
         </Btn>
-        <Btn variant="ghost" onClick={() => setShowEmailModal(true)}>
-          Email
-        </Btn>
-        <span style={{ color: T.textLo, fontSize: 12 }}>
-          {loading ? "Loading..." : `${filtered.length} records`}
-        </span>
+        
       </div>
 
       {/* ── Table ── */}
