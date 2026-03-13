@@ -12,6 +12,7 @@ export const Card = ({
       border: `1px solid ${T.border}`,
       borderRadius: 12,
       padding: 20,
+      overflow: "hidden", 
       ...style,
     }}
   >
