@@ -7,7 +7,7 @@ import {
   query,
 } from "firebase/firestore";
 import { exportToExcel } from "../../utils/export.ts";
-import Colleges from "../../utils/College.ts";
+
 import VISIT_REASONS from "../../types/ReasonsForVisit.ts";
 import T from "../../utils/theme.ts";
 import { AnimatePresence } from "framer-motion";
@@ -17,7 +17,7 @@ import Table from "../../components/Table.tsx";
 import Card from "../../components/Card.tsx";
 import Btn from "../../components/Btn.tsx";
 import Select from "../../components/Select.tsx";
-import {printReport} from "../../utils/printReport.ts";
+import { printReport } from "../../utils/printReport.ts";
 
 // ── Type ──
 interface Log {
@@ -53,6 +53,7 @@ const PageLogs = () => {
   const [filterCollege, setFilterCollege] = useState("all");
   const [filterReason, setFilterReason] = useState("all");
   const [showEmailModal, setShowEmailModal] = useState(false);
+  const [colleges, setColleges] = useState<string[]>([]);
 
   useEffect(() => {
     const unsub = onSnapshot(
@@ -81,6 +82,16 @@ const PageLogs = () => {
         setLoading(false);
       },
     );
+    return () => unsub();
+  }, [db]);
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, "colleges"), (snap) => {
+      const names = snap.docs
+        .map((d) => d.data().name as string)
+        .filter(Boolean)
+        .sort();
+      setColleges(names);
+    });
     return () => unsub();
   }, [db]);
 
@@ -121,7 +132,7 @@ const PageLogs = () => {
           onChange={setFilterCollege}
           options={[
             { value: "all", label: "All Colleges" },
-            ...Colleges.map((c: any) => ({ value: c, label: c })),
+            ...colleges.map((c: any) => ({ value: c, label: c })),
           ]}
           style={{ minWidth: 180 }}
         />
@@ -150,7 +161,6 @@ const PageLogs = () => {
         <Btn variant="ghost" onClick={() => printReport("print-logs-table")}>
           Print
         </Btn>
-        
       </div>
 
       {/* ── Table ── */}
@@ -192,7 +202,13 @@ const PageLogs = () => {
               data={filtered}
               renderRow={(l: Log) => (
                 <>
-                  <TD style={{ color: T.textHi, fontWeight: 500, whiteSpace: "nowrap" }}>
+                  <TD
+                    style={{
+                      color: T.textHi,
+                      fontWeight: 500,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
                     {l.name}
                   </TD>
                   <TD style={{ fontSize: 11 }}>{l.email}</TD>
@@ -208,7 +224,8 @@ const PageLogs = () => {
             />
           )}
         </Card>
-      </div>{/* ← end print-logs-table */}
+      </div>
+      {/* ← end print-logs-table */}
 
       <AnimatePresence>
         {showEmailModal && (
