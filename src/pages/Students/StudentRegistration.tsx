@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getAuth } from "firebase/auth";
-import { getFirestore, doc, updateDoc } from "firebase/firestore";
+import { getFirestore, doc, updateDoc, collection, onSnapshot,  } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import Colleges from "../../utils/College";
 import T from "../../utils/theme";
 
 const RegisterStudent = () => {
@@ -11,14 +10,28 @@ const RegisterStudent = () => {
   const db = getFirestore();
   const navigate = useNavigate();
   const [selectedCollege, setSelectedCollege] = useState<string>("");
-  const [studentId, setStudentId] = useState<string>(""); // ← new
+  const [studentId, setStudentId] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
-  const formatStudentId = (value: string): string => {
-    // Strip everything except digits
-    const digits = value.replace(/\D/g, "");
+  const [colleges, setColleges] = useState<string[]>([]); // ← from Firestore
 
-    // Apply format: 2-5-3 (e.g. 23-12883-625)
+  // ✅ Fetch colleges from Firestore in real time
+  useEffect(() => {
+    const unsub = onSnapshot(
+      collection(db, "colleges"),
+      (snap) => {
+        const names = snap.docs
+          .map((d) => d.data().name as string)
+          .filter(Boolean)
+          .sort();
+        setColleges(names);
+      }
+    );
+    return () => unsub();
+  }, [db]);
+
+  const formatStudentId = (value: string): string => {
+    const digits = value.replace(/\D/g, "");
     if (digits.length <= 2) return digits;
     if (digits.length <= 7) return `${digits.slice(0, 2)}-${digits.slice(2)}`;
     return `${digits.slice(0, 2)}-${digits.slice(2, 7)}-${digits.slice(7, 10)}`;
@@ -43,7 +56,7 @@ const RegisterStudent = () => {
 
       await updateDoc(doc(db, "users", user.uid), {
         college: selectedCollege,
-        studentId: studentId.trim(), // ← save to Firestore
+        studentId: studentId.trim(),
       });
 
       navigate("/Students");
@@ -53,6 +66,7 @@ const RegisterStudent = () => {
       setLoading(false);
     }
   };
+
   return (
     <div
       style={{
@@ -82,14 +96,7 @@ const RegisterStudent = () => {
         }}
       >
         <div style={{ textAlign: "center" }}>
-          <h1
-            style={{
-              color: T.textHi,
-              fontSize: 22,
-              fontWeight: 700,
-              marginBottom: 8,
-            }}
-          >
+          <h1 style={{ color: T.textHi, fontSize: 22, fontWeight: 700, marginBottom: 8 }}>
             Welcome to NEU Library
           </h1>
           <p style={{ color: T.textLo, fontSize: 13 }}>
@@ -99,14 +106,7 @@ const RegisterStudent = () => {
 
         {/* ── Student ID ── */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <label
-            style={{
-              color: T.textLo,
-              fontSize: 12,
-              letterSpacing: "0.06em",
-              textTransform: "uppercase",
-            }}
-          >
+          <label style={{ color: T.textLo, fontSize: 12, letterSpacing: "0.06em", textTransform: "uppercase" }}>
             Student ID Number
           </label>
           <input
@@ -114,7 +114,7 @@ const RegisterStudent = () => {
             placeholder="e.g. 23-12883-625"
             value={studentId}
             onChange={(e) => setStudentId(formatStudentId(e.target.value))}
-            maxLength={13}
+            maxLength={12}
             style={{
               background: T.elevated,
               border: `1px solid ${T.border}`,
@@ -130,14 +130,7 @@ const RegisterStudent = () => {
 
         {/* ── College ── */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <label
-            style={{
-              color: T.textLo,
-              fontSize: 12,
-              letterSpacing: "0.06em",
-              textTransform: "uppercase",
-            }}
-          >
+          <label style={{ color: T.textLo, fontSize: 12, letterSpacing: "0.06em", textTransform: "uppercase" }}>
             College
           </label>
           <select
@@ -156,12 +149,10 @@ const RegisterStudent = () => {
             }}
           >
             <option value="" disabled>
-              Select your college...
+              {colleges.length === 0 ? "Loading colleges..." : "Select your college..."}
             </option>
-            {Colleges.map((college) => (
-              <option key={college} value={college}>
-                {college}
-              </option>
+            {colleges.map((college) => (
+              <option key={college} value={college}>{college}</option>
             ))}
           </select>
         </div>

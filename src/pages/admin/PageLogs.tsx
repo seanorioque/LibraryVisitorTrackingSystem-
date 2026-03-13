@@ -124,7 +124,7 @@ const PageLogs = () => {
           onChange={setFilterCollege}
           options={[
             { value: "all", label: "All Colleges" },
-            ...Colleges.map((c) => ({ value: c, label: c })),
+            ...Colleges.map((c: any) => ({ value: c, label: c })),
           ]}
           style={{ minWidth: 180 }}
         />

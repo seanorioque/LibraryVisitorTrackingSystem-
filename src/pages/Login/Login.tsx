@@ -3,13 +3,13 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
+  getAdditionalUserInfo,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ConstellationAnimation } from "./LoginAnimation";
 import Logo from "../../assets/newEraLogo.png";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
-import { getAdditionalUserInfo } from "firebase/auth";
 
 const ADMIN_UIDS: string[] = ["gYVxgeNkdkUa3qtT8pRiVmqPpKD3"];
 
@@ -38,7 +38,7 @@ const Login = () => {
       console.log("isNewUser:", isNewUser);
       console.log("isAdmin:", isAdmin);
 
-      // ✅ Check if user is blocked before allowing entry
+      // ✅ Check if user is blocked
       const userRef = doc(db, "users", response.user.uid);
       const userSnap = await getDoc(userRef);
 
@@ -50,7 +50,7 @@ const Login = () => {
           }`
         );
         setAuthing(false);
-        return; // ← stop here, do not navigate
+        return;
       }
 
       // ✅ Create Firestore document for new user
@@ -61,15 +61,26 @@ const Login = () => {
           name: response.user.displayName,
           email: response.user.email,
           role: "student",
-          status: "active",      // ← always active on creation
+          status: "active",
           blockReason: null,
           createdAt: new Date(),
         });
         console.log("setDoc done");
       }
 
+      // ✅ Check if registration is incomplete (missing college or studentId)
+      const userData = userSnap.exists() ? userSnap.data() : null;
+      const isIncomplete =
+        !isAdmin &&
+        !isNewUser &&
+        (!userData?.college || !userData?.studentId);
+
       console.log("Reached navigate");
-      const destination = isAdmin ? "/" : isNewUser ? "/RegisterStudent" : "/Students";
+      const destination = isAdmin
+        ? "/"
+        : isNewUser || isIncomplete
+        ? "/RegisterStudent"
+        : "/Students";
       console.log("Navigating to:", destination);
       navigate(destination);
     } catch (err) {
@@ -127,7 +138,6 @@ const Login = () => {
             </p>
           </motion.div>
 
-          {/* ✅ Error message */}
           {error && (
             <motion.div
               initial={{ opacity: 0 }}
