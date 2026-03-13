@@ -24,7 +24,6 @@ import Card from "../../components/Card.tsx";
 import { SectionTitle } from "../../components/SectionTitle.tsx";
 import Btn from "../../components/Btn.tsx";
 import printReport from "../../utils/printReport.ts";
-import { AnimatePresence as AP } from "framer-motion";
 
 // ── Types ──
 interface Visit {
