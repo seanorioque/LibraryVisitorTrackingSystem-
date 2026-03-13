@@ -11,7 +11,7 @@ export const EmailModal = ({ onClose }: { onClose: () => void }) => {
     <Modal title=" Email Report Summary" onClose={onClose}>
       {sent ? (
         <div style={{ textAlign: "center", padding: "20px 0" }}>
-          <div style={{ fontSize: 40, marginBottom: 10 }}>✅</div>
+        
           <div style={{ color: T.green, fontWeight: 600 }}>
             Report sent successfully!
           </div>
