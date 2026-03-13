@@ -3,16 +3,13 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
-  // signOut, //deleteUser,
-} from "firebase/auth"; // ✅ add signOut
+} from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ConstellationAnimation } from "./LoginAnimation";
 import Logo from "../../assets/newEraLogo.png";
-import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import { getAdditionalUserInfo } from "firebase/auth";
-
-//const ALLOWED_DOMAIN = "neu.edu.ph";
 
 const ADMIN_UIDS: string[] = ["gYVxgeNkdkUa3qtT8pRiVmqPpKD3"];
 
@@ -36,47 +33,43 @@ const Login = () => {
       const additionalUserInfo = getAdditionalUserInfo(response);
       const isNewUser = additionalUserInfo?.isNewUser ?? false;
       const isAdmin = ADMIN_UIDS.includes(response.user.uid);
-      //const email = response.user.email ?? ""; //handles the institutional account
-      // const domain = email.split("@")[1]; //handles the institutional account
-      //const user = response.user;
 
-      console.log("User UID:", response.user.uid); //getting the user's UID
-      console.log("isNewUser:", isNewUser); // ← add this
-      console.log("isAdmin:", isAdmin); // ← add this
-      /*
-      if (domain !== ALLOWED_DOMAIN) { // Checking if the domain is valid
-        // ✅ Immediately sign them out before they get any access
-        await signOut(auth); //Redirecting to LoginPage
-        await deleteUser(user); // deleting the user from firebase
-        setError(`Access denied. Please use your @${ALLOWED_DOMAIN} account.`);
-        setAuthing(false); 
-        return;
-      } 
-        */
+      console.log("User UID:", response.user.uid);
+      console.log("isNewUser:", isNewUser);
+      console.log("isAdmin:", isAdmin);
+
+      // ✅ Check if user is blocked before allowing entry
+      const userRef = doc(db, "users", response.user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists() && userSnap.data().status === "blocked") {
+        await auth.signOut();
+        setError(
+          `Your account has been blocked. Reason: ${
+            userSnap.data().blockReason ?? "Please contact the library admin."
+          }`
+        );
+        setAuthing(false);
+        return; // ← stop here, do not navigate
+      }
 
       // ✅ Create Firestore document for new user
-      // ✅ Create Firestore document for new user
-      // ✅ Create Firestore document for new user (always a student)
-      // ✅ Create Firestore document for new user (always a student)
-      // ✅ Create Firestore document for new user (always a student)
       if (isNewUser) {
-        console.log("Reached setDoc"); // ← add this
+        console.log("Reached setDoc");
         await setDoc(doc(db, "users", response.user.uid), {
           uid: response.user.uid,
           name: response.user.displayName,
           email: response.user.email,
           role: "student",
+          status: "active",      // ← always active on creation
+          blockReason: null,
           createdAt: new Date(),
         });
-        console.log("setDoc done"); // ← add this
+        console.log("setDoc done");
       }
 
-      console.log("Reached navigate"); // ← add this
-      const destination = isAdmin
-        ? "/"
-        : isNewUser
-          ? "/RegisterStudent"
-          : "/Students";
+      console.log("Reached navigate");
+      const destination = isAdmin ? "/" : isNewUser ? "/RegisterStudent" : "/Students";
       console.log("Navigating to:", destination);
       navigate(destination);
     } catch (err) {
@@ -187,7 +180,7 @@ const Login = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1 }}
         className="absolute bottom-6 left-0 right-0 z-10 flex justify-center pointer-events-none"
-      ></motion.div>
+      />
     </div>
   );
 };

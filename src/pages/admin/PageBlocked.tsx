@@ -1,5 +1,13 @@
-import { USERS } from "./Admin";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  getFirestore,
+  collection,
+  onSnapshot,
+  doc,
+  updateDoc,
+  query,
+  where,
+} from "firebase/firestore";
 import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
 import T from "../../utils/theme.ts";
@@ -7,27 +15,88 @@ import User from "../../types/User.ts";
 import Badge from "../../components/Badge.tsx";
 import Modal from "../../components/Modal.tsx";
 import Card from "../../components/Card.tsx";
-import Btn from "../../components/Btn.tsx"
+import Btn from "../../components/Btn.tsx";
 
 const PageBlocked = () => {
-  const [users, setUsers] = useState<User[]>(
-    USERS.filter((u) => u.status === "blocked"),
-  );
+  const db = getFirestore();
+  const [users, setUsers] = useState<User[]>([]);
+  const [visitCounts, setVisitCounts] = useState<Record<string, number>>({});
+  const [lastVisits, setLastVisits] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<User | null>(null);
 
-  const unblock = (id: number) => {
-    setUsers((prev) => prev.filter((u) => u.id !== id));
+  // ── Realtime: only blocked users ──
+  useEffect(() => {
+    const unsub = onSnapshot(
+      query(collection(db, "users"), where("status", "==", "blocked")),
+      (snap) => {
+        const data = snap.docs.map((d) => ({
+          id: d.id,
+          ...(d.data() as Omit<User, "id">),
+        }));
+        setUsers(data);
+        setLoading(false);
+      }
+    );
+    return () => unsub();
+  }, [db]);
+
+  // ── Realtime: derive visit counts + last visit from visits collection ──
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, "visits"), (snap) => {
+      const counts: Record<string, number> = {};
+      const latest: Record<string, number> = {};
+
+      snap.docs.forEach((d) => {
+        const v = d.data();
+        const uid = v.uid as string;
+        if (!uid) return;
+
+        counts[uid] = (counts[uid] ?? 0) + 1;
+
+        const ts = v.timestamp?.seconds
+          ? v.timestamp.seconds * 1000
+          : new Date(v.timestamp).getTime();
+        if (!latest[uid] || ts > latest[uid]) latest[uid] = ts;
+      });
+
+      setVisitCounts(counts);
+      setLastVisits(
+        Object.fromEntries(
+          Object.entries(latest).map(([uid, ms]) => [
+            uid,
+            new Date(ms).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            }),
+          ])
+        )
+      );
+    });
+    return () => unsub();
+  }, [db]);
+
+  // ── Unblock ──
+  const unblock = async (id: string) => {
+    await updateDoc(doc(db, "users", id), {
+      status: "active",
+      blockReason: null,
+    });
     setSelected(null);
   };
+
+  if (loading) return (
+    <div style={{ color: T.textLo, fontSize: 13, textAlign: "center", padding: "40px 0" }}>
+      Loading...
+    </div>
+  );
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       {users.length === 0 ? (
         <Card style={{ textAlign: "center", padding: 48 }}>
-          <div style={{ fontSize: 48, marginBottom: 12 }}>🎉</div>
-          <div style={{ color: T.textHi, fontWeight: 600 }}>
-            No blocked users!
-          </div>
+          <div style={{ fontSize: 48, marginBottom: 12 }}>No blocked users.</div>
           <div style={{ color: T.textLo, fontSize: 13, marginTop: 4 }}>
             All users currently have active access.
           </div>
@@ -72,9 +141,7 @@ const PageBlocked = () => {
                 }}
               >
                 <div>
-                  <div
-                    style={{ color: T.textHi, fontWeight: 600, fontSize: 14 }}
-                  >
+                  <div style={{ color: T.textHi, fontWeight: 600, fontSize: 14 }}>
                     {u.name}
                   </div>
                   <div style={{ color: T.textLo, fontSize: 11, marginTop: 2 }}>
@@ -96,7 +163,7 @@ const PageBlocked = () => {
                 }}
               >
                 <span style={{ color: T.red, fontWeight: 600 }}>Reason: </span>
-                <span style={{ color: T.text }}>{u.blockReason}</span>
+                <span style={{ color: T.textLo }}>{u.blockReason}</span>
               </div>
               <div
                 style={{
@@ -120,33 +187,21 @@ const PageBlocked = () => {
         </div>
       )}
 
+      {/* ── Detail Modal ── */}
       <AnimatePresence>
         {selected && (
-          <Modal
-            title="Blocked User Details"
-            onClose={() => setSelected(null)}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 12,
-                fontSize: 13,
-              }}
-            >
+          <Modal title="Blocked User Details" onClose={() => setSelected(null)}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, fontSize: 13 }}>
               {(
                 [
                   ["Name", selected.name],
                   ["Email", selected.email],
-                  ["College", selected.college],
-                  ["Last Visit", selected.lastVisit],
-                  ["Total Visits", String(selected.visits)],
+                  ["College", selected.college ?? "—"],
+                  ["Last Visit", lastVisits[selected.uid] ?? "No visits yet"],
+                  ["Total Visits", String(visitCounts[selected.uid] ?? 0)],
                 ] as [string, string][]
               ).map(([k, v]) => (
-                <div
-                  key={k}
-                  style={{ display: "flex", justifyContent: "space-between" }}
-                >
+                <div key={k} style={{ display: "flex", justifyContent: "space-between" }}>
                   <span style={{ color: T.textLo }}>{k}</span>
                   <span style={{ color: T.textHi, fontWeight: 500 }}>{v}</span>
                 </div>
@@ -160,29 +215,13 @@ const PageBlocked = () => {
                   marginTop: 4,
                 }}
               >
-                <div
-                  style={{
-                    color: T.red,
-                    fontSize: 11,
-                    fontWeight: 600,
-                    marginBottom: 4,
-                  }}
-                >
+                <div style={{ color: T.red, fontSize: 11, fontWeight: 600, marginBottom: 4 }}>
                   BLOCK REASON
                 </div>
-                <div style={{ color: T.text }}>{selected.blockReason}</div>
+                <div style={{ color: T.textLo }}>{selected.blockReason}</div>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  gap: 8,
-                  justifyContent: "flex-end",
-                  marginTop: 4,
-                }}
-              >
-                <Btn variant="ghost" onClick={() => setSelected(null)}>
-                  Close
-                </Btn>
+              <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 4 }}>
+                <Btn variant="ghost" onClick={() => setSelected(null)}>Close</Btn>
                 <Btn variant="success" onClick={() => unblock(selected.id)}>
                   Unblock User
                 </Btn>
@@ -194,4 +233,5 @@ const PageBlocked = () => {
     </div>
   );
 };
+
 export default PageBlocked;

@@ -24,7 +24,6 @@ import StatCard from "../../components/StatCard.tsx";
 import Card from "../../components/Card.tsx";
 import { SectionTitle } from "../../components/SectionTitle.tsx";
 import Btn from "../../components/Btn.tsx";
-import { USERS } from "./Admin";
 
 // ── Types ──────────────────────────────────────────────────
 interface Visit {
@@ -71,6 +70,7 @@ const COLLEGE_COLORS = [
   "#f97316",
 ];
 
+
 // ── Component ──────────────────────────────────────────────
 export const PageDashboard = ({
   setPage,
@@ -79,7 +79,6 @@ export const PageDashboard = ({
   setPage: (p: PageId) => void;
 }) => {
   const db = getFirestore();
-  const blockedCount = USERS.filter((u) => u.status === "blocked").length;
 
   // ── State ──
   const [visits, setVisits] = useState<Visit[]>([]);
@@ -90,7 +89,7 @@ export const PageDashboard = ({
   const [collegeData, setCollegeData] = useState<CollegeEntry[]>([]);
   const [hourlyData, setHourlyData] = useState<HourlyEntry[]>([]);
   const [reasonData, setReasonData] = useState<ReasonEntry[]>([]);
-
+  const [blockedCount, setBlockedCount] = useState(0);
   // ── Realtime listener ──
   useEffect(() => {
     const unsub = onSnapshot(collection(db, "visits"), (snap) => {
