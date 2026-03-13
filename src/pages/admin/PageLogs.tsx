@@ -17,7 +17,7 @@ import Table from "../../components/Table.tsx";
 import Card from "../../components/Card.tsx";
 import Btn from "../../components/Btn.tsx";
 import Select from "../../components/Select.tsx";
-import printReport from "../../utils/printReport.ts";
+import {printReport} from "../../utils/printReport.ts";
 
 // ── Type ──
 interface Log {
@@ -38,7 +38,6 @@ const toDate = (ts: Log["timestamp"]): Date =>
     ? ts
     : new Date((ts as { seconds: number }).seconds * 1000);
 
-// ✅ Normalize reason: handles both old (value) and new (label) saved formats
 const normalizeReason = (reason: string): string => {
   const match = VISIT_REASONS.find(
     (r) => r.value === reason || r.label === reason,
@@ -55,7 +54,6 @@ const PageLogs = () => {
   const [filterReason, setFilterReason] = useState("all");
   const [showEmailModal, setShowEmailModal] = useState(false);
 
-  // ── Realtime: visits collection ──
   useEffect(() => {
     const unsub = onSnapshot(
       query(collection(db, "visits"), orderBy("timestamp", "desc")),
@@ -70,7 +68,7 @@ const PageLogs = () => {
             email: v.email ?? "—",
             college: v.college ?? "—",
             studentId: v.studentId ?? "—",
-            reason: normalizeReason(v.reason ?? "—"), // ✅ normalize here
+            reason: normalizeReason(v.reason ?? "—"),
             date: date.toLocaleDateString("en-CA"),
             time: date.toLocaleTimeString("en-US", {
               hour: "2-digit",
@@ -86,7 +84,6 @@ const PageLogs = () => {
     return () => unsub();
   }, [db]);
 
-  // ── Filter ──
   const filtered = logs.filter((l) => {
     const matchDate = !filterDate || l.date === filterDate;
     const matchCollege = filterCollege === "all" || l.college === filterCollege;
@@ -150,7 +147,7 @@ const PageLogs = () => {
         >
           Export Excel
         </Btn>
-        <Btn variant="ghost" onClick={printReport}>
+        <Btn variant="ghost" onClick={() => printReport("print-logs-table")}>
           Print
         </Btn>
         <Btn variant="ghost" onClick={() => setShowEmailModal(true)}>
@@ -162,65 +159,61 @@ const PageLogs = () => {
       </div>
 
       {/* ── Table ── */}
-      <Card style={{ padding: 0 }}>
-        {loading ? (
-          <div
-            style={{
-              color: T.textLo,
-              fontSize: 13,
-              textAlign: "center",
-              padding: "40px 0",
-            }}
-          >
-            Loading logs...
-          </div>
-        ) : filtered.length === 0 ? (
-          <div
-            style={{
-              color: T.textLo,
-              fontSize: 13,
-              textAlign: "center",
-              padding: "40px 0",
-            }}
-          >
-            No records found.
-          </div>
-        ) : (
-          <Table
-            columns={[
-              "Name",
-              "Email",
-              "College",
-              "Student ID",
-              "Reason",
-              "Date",
-              "Time",
-            ]}
-            data={filtered}
-            renderRow={(l: Log) => (
-              <>
-                <TD
-                  style={{
-                    color: T.textHi,
-                    fontWeight: 500,
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {l.name}
-                </TD>
-                <TD style={{ fontSize: 11 }}>{l.email}</TD>
-                <TD style={{ fontSize: 11, maxWidth: 120 }}>
-                  {l.college.replace("College of ", "")}
-                </TD>
-                <TD style={{ fontSize: 11 }}>{l.studentId}</TD>
-                <TD style={{ fontSize: 11 }}>{l.reason}</TD>
-                <TD style={{ fontSize: 11 }}>{l.date}</TD>
-                <TD style={{ fontSize: 11 }}>{l.time}</TD>
-              </>
-            )}
-          />
-        )}
-      </Card>
+      <div id="print-logs-table">
+        <Card style={{ padding: 0 }}>
+          {loading ? (
+            <div
+              style={{
+                color: T.textLo,
+                fontSize: 13,
+                textAlign: "center",
+                padding: "40px 0",
+              }}
+            >
+              Loading logs...
+            </div>
+          ) : filtered.length === 0 ? (
+            <div
+              style={{
+                color: T.textLo,
+                fontSize: 13,
+                textAlign: "center",
+                padding: "40px 0",
+              }}
+            >
+              No records found.
+            </div>
+          ) : (
+            <Table
+              columns={[
+                "Name",
+                "Email",
+                "College",
+                "Student ID",
+                "Reason",
+                "Date",
+                "Time",
+              ]}
+              data={filtered}
+              renderRow={(l: Log) => (
+                <>
+                  <TD style={{ color: T.textHi, fontWeight: 500, whiteSpace: "nowrap" }}>
+                    {l.name}
+                  </TD>
+                  <TD style={{ fontSize: 11 }}>{l.email}</TD>
+                  <TD style={{ fontSize: 11, maxWidth: 120 }}>
+                    {l.college.replace("College of ", "")}
+                  </TD>
+                  <TD style={{ fontSize: 11 }}>{l.studentId}</TD>
+                  <TD style={{ fontSize: 11 }}>{l.reason}</TD>
+                  <TD style={{ fontSize: 11 }}>{l.date}</TD>
+                  <TD style={{ fontSize: 11 }}>{l.time}</TD>
+                </>
+              )}
+            />
+          )}
+        </Card>
+      </div>{/* ← end print-logs-table */}
 
       <AnimatePresence>
         {showEmailModal && (
