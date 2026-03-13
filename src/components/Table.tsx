@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import TableProps from "../utils/TableProps";
 import T from "../utils/theme";
-export function Table<T extends { id?: number }>({
+
+export function Table<T extends { id?: string | number }>({ // ← fix here
   columns,
   data,
   renderRow,

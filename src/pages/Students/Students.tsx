@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { getAuth } from "firebase/auth";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import T from "../../utils/theme";
@@ -29,14 +35,19 @@ const Students = () => {
       if (!user) throw new Error("No authenticated user found.");
 
       // Record the visit log in Firestore
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const college = userDoc.exists() ? userDoc.data().college : "Unknown";
+      const studentId = userDoc.exists() ? userDoc.data().studentId ?? "—" : "—"; // ← add
+
       await addDoc(collection(db, "visits"), {
         uid: user.uid,
         name: user.displayName,
         email: user.email,
         reason: selectedReason,
+        college, 
+        studentId,
         timestamp: new Date(),
       });
-
       navigate("/success"); // ← redirect to success page after logging
     } catch (err) {
       console.error(err);
@@ -83,7 +94,7 @@ const Students = () => {
               marginBottom: 8,
             }}
           >
-            Welcome back
+            Welcome
             {user?.displayName ? `, ${user.displayName.split(" ")[0]}` : ""}!
           </h1>
           <p style={{ color: T.textLo, fontSize: 13 }}>

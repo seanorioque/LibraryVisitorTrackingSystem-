@@ -11,12 +11,26 @@ const RegisterStudent = () => {
   const db = getFirestore();
   const navigate = useNavigate();
   const [selectedCollege, setSelectedCollege] = useState<string>("");
+  const [studentId, setStudentId] = useState<string>(""); // ← new
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const formatStudentId = (value: string): string => {
+    // Strip everything except digits
+    const digits = value.replace(/\D/g, "");
+
+    // Apply format: 2-5-3 (e.g. 23-12883-625)
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 7) return `${digits.slice(0, 2)}-${digits.slice(2)}`;
+    return `${digits.slice(0, 2)}-${digits.slice(2, 7)}-${digits.slice(7, 10)}`;
+  };
 
   const handleSubmit = async () => {
     if (!selectedCollege) {
       setError("Please select your college.");
+      return;
+    }
+    if (!studentId.trim() || studentId.length < 12) {
+      setError("Please enter a valid student ID (e.g. 23-12883-625).");
       return;
     }
 
@@ -27,19 +41,18 @@ const RegisterStudent = () => {
       const user = auth.currentUser;
       if (!user) throw new Error("No authenticated user found.");
 
-
       await updateDoc(doc(db, "users", user.uid), {
         college: selectedCollege,
+        studentId: studentId.trim(), // ← save to Firestore
       });
 
-      navigate("/Students"); 
+      navigate("/Students");
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "An error occurred.");
       setLoading(false);
     }
   };
-
   return (
     <div
       style={{
@@ -80,10 +93,42 @@ const RegisterStudent = () => {
             Welcome to NEU Library
           </h1>
           <p style={{ color: T.textLo, fontSize: 13 }}>
-            Please select your college to complete your registration.
+            Please complete your registration to continue.
           </p>
         </div>
 
+        {/* ── Student ID ── */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <label
+            style={{
+              color: T.textLo,
+              fontSize: 12,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+            }}
+          >
+            Student ID Number
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. 23-12883-625"
+            value={studentId}
+            onChange={(e) => setStudentId(formatStudentId(e.target.value))}
+            maxLength={13}
+            style={{
+              background: T.elevated,
+              border: `1px solid ${T.border}`,
+              borderRadius: 8,
+              color: T.textHi,
+              fontSize: 13,
+              padding: "10px 14px",
+              outline: "none",
+              width: "100%",
+            }}
+          />
+        </div>
+
+        {/* ── College ── */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <label
             style={{
@@ -121,6 +166,7 @@ const RegisterStudent = () => {
           </select>
         </div>
 
+        {/* ── Error ── */}
         {error && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -139,6 +185,7 @@ const RegisterStudent = () => {
           </motion.div>
         )}
 
+        {/* ── Submit ── */}
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
