@@ -37,6 +37,7 @@ const Students = () => {
       // Record the visit log in Firestore
       const userDoc = await getDoc(doc(db, "users", user.uid));
       const college = userDoc.exists() ? userDoc.data().college : "Unknown";
+      const studentId = userDoc.exists() ? userDoc.data().studentId ?? "—" : "—"; // ← add
 
       await addDoc(collection(db, "visits"), {
         uid: user.uid,
@@ -44,6 +45,7 @@ const Students = () => {
         email: user.email,
         reason: selectedReason,
         college, 
+        studentId,
         timestamp: new Date(),
       });
       navigate("/success"); // ← redirect to success page after logging
@@ -92,7 +94,7 @@ const Students = () => {
               marginBottom: 8,
             }}
           >
-            Welcome back
+            Welcome
             {user?.displayName ? `, ${user.displayName.split(" ")[0]}` : ""}!
           </h1>
           <p style={{ color: T.textLo, fontSize: 13 }}>

@@ -26,6 +26,7 @@ interface Log {
   name: string;
   email: string;
   college: string;
+  studentId: string;
   reason: string;
   date: string;
   time: string;
@@ -40,7 +41,7 @@ const toDate = (ts: Log["timestamp"]): Date =>
 // ✅ Normalize reason: handles both old (value) and new (label) saved formats
 const normalizeReason = (reason: string): string => {
   const match = VISIT_REASONS.find(
-    (r) => r.value === reason || r.label === reason
+    (r) => r.value === reason || r.label === reason,
   );
   return match?.label ?? reason;
 };
@@ -68,6 +69,7 @@ const PageLogs = () => {
             name: v.name ?? "—",
             email: v.email ?? "—",
             college: v.college ?? "—",
+            studentId: v.studentId ?? "—",
             reason: normalizeReason(v.reason ?? "—"), // ✅ normalize here
             date: date.toLocaleDateString("en-CA"),
             time: date.toLocaleTimeString("en-US", {
@@ -184,7 +186,15 @@ const PageLogs = () => {
           </div>
         ) : (
           <Table
-            columns={["Name", "Email", "College", "Reason", "Date", "Time"]}
+            columns={[
+              "Name",
+              "Email",
+              "College",
+              "Student ID",
+              "Reason",
+              "Date",
+              "Time",
+            ]}
             data={filtered}
             renderRow={(l: Log) => (
               <>
@@ -201,6 +211,7 @@ const PageLogs = () => {
                 <TD style={{ fontSize: 11, maxWidth: 120 }}>
                   {l.college.replace("College of ", "")}
                 </TD>
+                <TD style={{ fontSize: 11 }}>{l.studentId}</TD>
                 <TD style={{ fontSize: 11 }}>{l.reason}</TD>
                 <TD style={{ fontSize: 11 }}>{l.date}</TD>
                 <TD style={{ fontSize: 11 }}>{l.time}</TD>
