@@ -7,9 +7,9 @@ export interface User {
   role: string;
   status: "active" | "blocked";
   blockReason: string | null;
-  visits?: number;       // ← optional, derived from visits collection
-  lastVisit?: string;    // ← optional, derived from visits collection
-  registeredAt?: string; // ← optional
+  visits?: number;       
+  lastVisit?: string;    
+  registeredAt?: string; 
   createdAt?: { seconds: number } | Date;
 }
 
