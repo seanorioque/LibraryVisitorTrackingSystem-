@@ -19,56 +19,20 @@ import {
 } from "recharts";
 import T from "../../utils/theme.ts";
 import PageId from "../../types/PageId.ts";
-import { PIE_COLORS } from "../../constants/charts.ts";
+import { hourlyData, PIE_COLORS } from "../../constants/charts.ts";
 import StatCard from "../../components/StatCard.tsx";
 import Card from "../../components/Card.tsx";
 import { SectionTitle } from "../../components/SectionTitle.tsx";
 import Btn from "../../components/Btn.tsx";
+import Visit from "../../types/Visit.ts"
+import WeeklyEntry from "../../types/WeeklyEntry.ts";
+import CollegeEntry from "../../types/CollegeEntry.ts";
+import HourlyEntry from "../../types/HourlyEntry.ts"
+import ReasonEntry from "../../types/ReasonEntry.ts";
+import toDate from "../../helpers/toDate.ts";
+import DAYS from "../../helpers/Days.ts";
+import COLLEGE_COLORS from "../../helpers/CollegeColors.ts";
 
-// ── Types ──────────────────────────────────────────────────
-interface Visit {
-  uid: string;
-  name: string;
-  email: string;
-  reason: string;
-  college: string;
-  timestamp: { seconds: number; nanoseconds: number } | Date;
-}
-
-interface WeeklyEntry {
-  day: string;
-  visitors: number;
-}
-interface CollegeEntry {
-  name: string;
-  visitors: number;
-  fill: string;
-}
-interface HourlyEntry {
-  hour: string;
-  count: number;
-}
-interface ReasonEntry {
-  name: string;
-  value: number;
-}
-
-// ── Helpers ────────────────────────────────────────────────
-const toDate = (ts: Visit["timestamp"]): Date =>
-  ts instanceof Date
-    ? ts
-    : new Date((ts as { seconds: number }).seconds * 1000);
-
-const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const COLLEGE_COLORS = [
-  T.accent,
-  T.green,
-  T.purple,
-  T.yellow,
-  T.red,
-  "#06b6d4",
-  "#f97316",
-];
 
 // ── Component ──────────────────────────────────────────────
 export const PageDashboard = ({
@@ -79,7 +43,7 @@ export const PageDashboard = ({
 }) => {
   const db = getFirestore();
 
-  // ── State ──
+
   const [visits, setVisits] = useState<Visit[]>([]);
   const [todayTotal, setTodayTotal] = useState(0);
   const [weekTotal, setWeekTotal] = useState(0);
