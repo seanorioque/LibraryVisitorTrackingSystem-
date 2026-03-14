@@ -18,32 +18,13 @@ import Card from "../../components/Card.tsx";
 import Btn from "../../components/Btn.tsx";
 import Select from "../../components/Select.tsx";
 import { printReport } from "../../utils/printReport.ts";
+import Log from "../../types/Log.ts"
+import toDate from "../../helpers/toDate.ts";
+import normalizeReason from "../../types/normalizeReason.ts";
 
-// ── Type ──
-interface Log {
-  id: string;
-  uid: string;
-  name: string;
-  email: string;
-  college: string;
-  studentId: string;
-  reason: string;
-  date: string;
-  time: string;
-  timestamp: { seconds: number } | Date;
-}
 
-const toDate = (ts: Log["timestamp"]): Date =>
-  ts instanceof Date
-    ? ts
-    : new Date((ts as { seconds: number }).seconds * 1000);
 
-const normalizeReason = (reason: string): string => {
-  const match = VISIT_REASONS.find(
-    (r) => r.value === reason || r.label === reason,
-  );
-  return match?.label ?? reason;
-};
+
 
 const PageLogs = () => {
   const db = getFirestore();
