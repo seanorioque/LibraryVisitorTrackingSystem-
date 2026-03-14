@@ -19,7 +19,7 @@ import Btn from "../../components/Btn.tsx";
 import Select from "../../components/Select.tsx";
 import { printReport } from "../../utils/printReport.ts";
 import Log from "../../types/Log.ts"
-import toDate from "../../helpers/toDate.ts";
+import {toDateLog as toDate} from "../../helpers/toDate.ts";
 import normalizeReason from "../../types/normalizeReason.ts";
 
 

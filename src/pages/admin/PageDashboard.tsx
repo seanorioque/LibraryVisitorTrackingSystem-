@@ -29,7 +29,7 @@ import WeeklyEntry from "../../types/WeeklyEntry.ts";
 import CollegeEntry from "../../types/CollegeEntry.ts";
 import HourlyEntry from "../../types/HourlyEntry.ts"
 import ReasonEntry from "../../types/ReasonEntry.ts";
-import toDate from "../../helpers/toDate.ts";
+import {toDateVisit as toDate} from "../../helpers/toDate.ts";
 import DAYS from "../../helpers/Days.ts";
 import COLLEGE_COLORS from "../../helpers/CollegeColors.ts";
 

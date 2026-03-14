@@ -23,26 +23,12 @@ import Card from "../../components/Card.tsx";
 import { SectionTitle } from "../../components/SectionTitle.tsx";
 import Btn from "../../components/Btn.tsx";
 import {printReport} from "../../utils/printReport.ts";
-
-interface Visit {
-  uid: string;
-  name: string;
-  email: string;
-  college: string;
-  reason: string;
-  timestamp: { seconds: number } | Date;
-}
-
-interface MonthlyEntry { date: string; visitors: number }
-interface CollegeEntry { name: string; visitors: number; fill: string }
-interface ReasonEntry  { name: string; value: number }
-
-const toDate = (ts: Visit["timestamp"]): Date =>
-  ts instanceof Date ? ts : new Date((ts as { seconds: number }).seconds * 1000);
-
-const COLLEGE_COLORS = [
-  T.accent, T.green, T.purple, T.yellow, T.red, "#06b6d4", "#f97316",
-];
+import Visit from "../../types/Visit.ts";
+import MonthlyEntry from "../../types/MonthlyEntry.ts";
+import CollegeEntry from "../../types/CollegeEntry.ts";
+import ReasonEntry from "../../types/ReasonEntry.ts";
+import {toDateVisit as toDate} from "../../helpers/toDate.ts";
+import COLLEGE_COLORS from "../../helpers/CollegeColors.ts";
 
 const PageReports = () => {
   const db = getFirestore();
