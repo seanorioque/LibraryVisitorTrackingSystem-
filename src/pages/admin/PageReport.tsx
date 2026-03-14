@@ -14,7 +14,6 @@ import {
 import T from "../../utils/theme.ts";
 import User from "../../types/User.ts";
 import { PIE_COLORS } from "../../constants/charts.ts";
-import { exportToExcel } from "../../utils/export.ts";
 import { fmt } from "../../utils/format.ts";
 import EmailModal from "../../components/EmailModal.tsx";
 import TD from "../../components/TD.tsx";
@@ -132,9 +131,7 @@ const PageReports = () => {
 
       {/* ── Actions ── */}
       <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-        <Btn onClick={() => exportToExcel(visits as unknown as Record<string, unknown>[], "full-report")}>
-          Export to Excel
-        </Btn>
+        
         <Btn variant="ghost" onClick={() => printReport("print-reports-charts")}>
           Print Report
         </Btn>

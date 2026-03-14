@@ -24,15 +24,14 @@ import StatCard from "../../components/StatCard.tsx";
 import Card from "../../components/Card.tsx";
 import { SectionTitle } from "../../components/SectionTitle.tsx";
 import Btn from "../../components/Btn.tsx";
-import Visit from "../../types/Visit.ts"
+import Visit from "../../types/Visit.ts";
 import WeeklyEntry from "../../types/WeeklyEntry.ts";
 import CollegeEntry from "../../types/CollegeEntry.ts";
-import HourlyEntry from "../../types/HourlyEntry.ts"
+import HourlyEntry from "../../types/HourlyEntry.ts";
 import ReasonEntry from "../../types/ReasonEntry.ts";
-import {toDateVisit as toDate} from "../../helpers/toDate.ts";
+import { toDateVisit as toDate } from "../../helpers/toDate.ts";
 import DAYS from "../../helpers/Days.ts";
 import COLLEGE_COLORS from "../../helpers/CollegeColors.ts";
-
 
 // ── Component ──────────────────────────────────────────────
 export const PageDashboard = ({
@@ -42,7 +41,6 @@ export const PageDashboard = ({
   setPage: (p: PageId) => void;
 }) => {
   const db = getFirestore();
-
 
   const [visits, setVisits] = useState<Visit[]>([]);
   const [todayTotal, setTodayTotal] = useState(0);
@@ -275,7 +273,8 @@ export const PageDashboard = ({
                   tick={{ fill: T.textLo, fontSize: 10 }}
                   axisLine={false}
                   tickLine={false}
-                  width={80}
+                  width={140}
+                  tickFormatter={(v: string) => v.replace("College of ", "")}
                 />
                 <Tooltip
                   contentStyle={{

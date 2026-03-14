@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getAuth } from "firebase/auth";
 import {
   getFirestore,
@@ -10,11 +10,13 @@ import {
   query,
   where,
   Timestamp,
+  onSnapshot,
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import T from "../../utils/theme";
 import VISIT_REASONS from "../../types/ReasonsForVisit";
+import ADMIN_UIDS from "../../constants/admin";
 
 const Students = () => {
   const auth = getAuth();
@@ -25,6 +27,18 @@ const Students = () => {
   const [error, setError] = useState<string>("");
 
   const user = auth.currentUser;
+  useEffect(() => {
+    if (!user) return;
+    if (ADMIN_UIDS.includes(user.uid)) return; // ← skip for admin
+
+    const unsub = onSnapshot(doc(db, "users", user.uid), (snap) => {
+      if (snap.exists() && snap.data().status === "blocked") {
+        auth.signOut();
+        navigate("/login");
+      }
+    });
+    return () => unsub();
+  }, [user, db, auth, navigate]);
 
   const handleSubmit = async () => {
     if (!selectedReason) {
@@ -56,13 +70,16 @@ const Students = () => {
       if (!dupeSnap.empty) {
         setError("You have already logged a visit today.");
         setLoading(false);
+        setTimeout(() => navigate("/login"), 1000);
         return;
       }
 
       // ── Fetch college + studentId ──
       const userDoc = await getDoc(doc(db, "users", user.uid));
       const college = userDoc.exists() ? userDoc.data().college : "Unknown";
-      const studentId = userDoc.exists() ? userDoc.data().studentId ?? "—" : "—";
+      const studentId = userDoc.exists()
+        ? (userDoc.data().studentId ?? "—")
+        : "—";
 
       // ── Save visit ──
       const selected = VISIT_REASONS.find((r) => r.value === selectedReason);

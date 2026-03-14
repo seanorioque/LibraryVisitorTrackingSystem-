@@ -50,30 +50,44 @@ const Login = () => {
         setError(
           `Your account has been blocked. Reason: ${
             userSnap.data().blockReason ?? "Please contact the library admin."
-          }`
+          }`,
         );
         setAuthing(false);
         return;
       }
 
-      // ── Create Firestore doc for new user ──
+
+
+      // ── Create full doc for new users ──
       if (isNewUser) {
-        await setDoc(doc(db, "users", user.uid), {
-          uid: user.uid,
-          name: user.displayName,
-          email: user.email,
-          role: "student",
-          status: "active",
-          blockReason: null,
-          createdAt: new Date(),
-        });
+        await setDoc(
+          doc(db, "users", user.uid),
+          {
+            uid: user.uid,
+            role: "student",
+            name: user.displayName,
+            email: user.email,
+            status: "active",
+            blockReason: null,
+            college: null,
+            studentId: null,
+            createdAt: new Date(),
+          },
+          { merge: true },
+        );
       }
 
       // ── Check incomplete registration ──
-      const userData = userSnap.exists() ? userSnap.data() : null;
-      const isIncomplete = !isAdmin && !isNewUser && (!userData?.college || !userData?.studentId);
+      const latestSnap = await getDoc(doc(db, "users", user.uid));
+      const userData = latestSnap.exists() ? latestSnap.data() : null;
+      const isIncomplete =
+        !isAdmin && (!userData?.college || !userData?.studentId);
 
-      const destination = isAdmin ? "/" : isNewUser || isIncomplete ? "/RegisterStudent" : "/Students";
+      const destination = isAdmin
+        ? "/"
+        : isIncomplete
+          ? "/RegisterStudent"
+          : "/Students";
       navigate(destination);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
@@ -118,7 +132,10 @@ const Login = () => {
             <p className="text-[10px] tracking-[0.22em] uppercase text-blue-300/50 font-mono mb-3">
               New Era University Library
             </p>
-            <h1 className="text-white text-2xl font-bold tracking-tight" style={{ fontFamily: "Georgia, serif" }}>
+            <h1
+              className="text-white text-2xl font-bold tracking-tight"
+              style={{ fontFamily: "Georgia, serif" }}
+            >
               Welcome
             </h1>
             <p className="mt-2 text-xs text-blue-200/40 font-mono tracking-wide">

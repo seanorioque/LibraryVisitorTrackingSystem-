@@ -5,8 +5,7 @@ import {
   onSnapshot,
   doc,
   updateDoc,
-  query,
-  orderBy,
+
 } from "firebase/firestore";
 import { AnimatePresence } from "framer-motion";
 import T from "../../utils/theme.ts";
@@ -21,11 +20,12 @@ import Btn from "../../components/Btn.tsx";
 import Select from "../../components/Select.tsx";
 import User from "../../types/User.ts";
 
-// ── Component ──────────────────────────────────────────────
 const PageUsers = () => {
   const db = getFirestore();
 
+  // ── State ──
   const [users, setUsers] = useState<User[]>([]);
+  const [colleges, setColleges] = useState<string[]>([]);
   const [visitCounts, setVisitCounts] = useState<Record<string, number>>({});
   const [lastVisits, setLastVisits] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
@@ -37,10 +37,10 @@ const PageUsers = () => {
     action: string;
   } | null>(null);
 
-  // ── Realtime: users collection ──
+  // ── Realtime: users ──
   useEffect(() => {
     const unsub = onSnapshot(
-      query(collection(db, "users"), orderBy("createdAt", "desc")),
+      collection(db, "users"),
       (snap) => {
         const data = snap.docs.map((d) => ({
           id: d.id,
@@ -54,33 +54,33 @@ const PageUsers = () => {
     );
     return () => unsub();
   }, [db]);
-  // ── Realtime: colleges from Firestore ──
-useEffect(() => {
-  const unsub = onSnapshot(collection(db, "colleges"), (snap) => {
-    const names = snap.docs
-      .map((d) => d.data().name as string)
-      .filter(Boolean)
-      .sort();
-    setColleges(names);
-  });
-  return () => unsub();
-}, [db]);
 
-  // ── Realtime: visits collection → derive visit counts + last visit ──
+  // ── Realtime: colleges ──
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, "colleges"), (snap) => {
+      setColleges(
+        snap.docs
+          .map((d) => d.data().name as string)
+          .filter(Boolean)
+          .sort(),
+      );
+    });
+    return () => unsub();
+  }, [db]);
+
+  // ── Realtime: visits ──
   useEffect(() => {
     const unsub = onSnapshot(collection(db, "visits"), (snap) => {
       const counts: Record<string, number> = {};
-      const latest: Record<string, number> = {}; // uid → latest timestamp ms
+      const latest: Record<string, number> = {};
 
       snap.docs.forEach((d) => {
         const v = d.data();
         const uid = v.uid as string;
         if (!uid) return;
 
-        // Count
         counts[uid] = (counts[uid] ?? 0) + 1;
 
-        // Latest timestamp
         const ts = v.timestamp?.seconds
           ? v.timestamp.seconds * 1000
           : new Date(v.timestamp).getTime();
@@ -117,7 +117,7 @@ useEffect(() => {
     });
     setConfirmModal(null);
   };
-  const [colleges, setColleges] = useState<string[]>([]);
+
   // ── Filter ──
   const filtered = users.filter((u) => {
     const q = search.toLowerCase();
@@ -133,15 +133,8 @@ useEffect(() => {
   // ── Render ──
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      {/* ── Filters ── */}
-      <div
-        style={{
-          display: "flex",
-          gap: 10,
-          flexWrap: "wrap",
-          alignItems: "center",
-        }}
-      >
+      {/* Filters */}
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
         <Input
           placeholder="Search by name or email..."
           value={search}
@@ -172,7 +165,7 @@ useEffect(() => {
           onClick={() =>
             exportToExcel(
               filtered as unknown as Record<string, unknown>[],
-              "NEU_LIBRARY_LOG",
+              "NEU_LIBRARY_USERS",
               "users",
             )
           }
@@ -181,71 +174,37 @@ useEffect(() => {
         </Btn>
       </div>
 
-      {/* ── Table ── */}
+      {/* Table */}
       <Card style={{ padding: 0 }}>
         {loading ? (
-          <div
-            style={{
-              color: T.textLo,
-              fontSize: 13,
-              textAlign: "center",
-              padding: "40px 0",
-            }}
-          >
+          <div style={{ color: T.textLo, fontSize: 13, textAlign: "center", padding: "40px 0" }}>
             Loading users...
           </div>
         ) : filtered.length === 0 ? (
-          <div
-            style={{
-              color: T.textLo,
-              fontSize: 13,
-              textAlign: "center",
-              padding: "40px 0",
-            }}
-          >
+          <div style={{ color: T.textLo, fontSize: 13, textAlign: "center", padding: "40px 0" }}>
             No users found.
           </div>
         ) : (
           <Table
-            columns={[
-              "Name",
-              "Email (Institutional)",
-              "College",
-              "Visits",
-              "Last Visit",
-              "Status",
-              "Actions",
-            ]}
+            columns={["Name", "Email (Institutional)", "College", "Visits", "Last Visit", "Status", "Actions"]}
             data={filtered}
             renderRow={(u: User) => (
               <>
                 <TD style={{ color: T.textHi, fontWeight: 500 }}>{u.name}</TD>
                 <TD>{u.email}</TD>
                 <TD style={{ maxWidth: 140 }}>
-                  <span style={{ fontSize: 11 }}>{u.college ?? "—"}</span>
+                  <span style={{ fontSize: 11 }}>{u.college ?? "Admin"}</span>
                 </TD>
                 <TD style={{ color: T.accent }}>{visitCounts[u.uid] ?? 0}</TD>
-                <TD style={{ fontSize: 11 }}>
-                  {lastVisits[u.uid] ?? "No visits yet"}
-                </TD>
-                <TD>
-                  <Badge status={u.status} />
-                </TD>
+                <TD style={{ fontSize: 11 }}>{lastVisits[u.uid] ?? "No visits"}</TD>
+                <TD><Badge status={u.status} /></TD>
                 <TD>
                   {u.status === "active" ? (
-                    <Btn
-                      variant="danger"
-                      onClick={() =>
-                        setConfirmModal({ user: u, action: "block" })
-                      }
-                    >
+                    <Btn variant="danger" onClick={() => setConfirmModal({ user: u, action: "block" })}>
                       Block
                     </Btn>
                   ) : (
-                    <Btn
-                      variant="success"
-                      onClick={() => toggle(u.id, "unblock")}
-                    >
+                    <Btn variant="success" onClick={() => toggle(u.id, "unblock")}>
                       Unblock
                     </Btn>
                   )}
@@ -256,7 +215,7 @@ useEffect(() => {
         )}
       </Card>
 
-      {/* ── Block Modal ── */}
+      {/* Block Modal */}
       <AnimatePresence>
         {confirmModal && (
           <BlockModal

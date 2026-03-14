@@ -3,7 +3,7 @@ import { getAuth } from "firebase/auth";
 import {
   getFirestore,
   doc,
-  updateDoc,
+  setDoc,
   collection,
   onSnapshot,
 } from "firebase/firestore";
@@ -22,18 +22,35 @@ const RegisterStudent = () => {
   const [error, setError] = useState("");
   const [colleges, setColleges] = useState<string[]>([]);
 
-  // ── Realtime: colleges ──
   useEffect(() => {
     const unsub = onSnapshot(collection(db, "colleges"), (snap) => {
       setColleges(
         snap.docs
           .map((d) => d.data().name as string)
           .filter(Boolean)
-          .sort()
+          .sort(),
       );
     });
     return () => unsub();
   }, [db]);
+  useEffect(() => {
+    const unsubAuth = auth.onAuthStateChanged((user) => {
+      if (!user) {
+        navigate("/login");
+        return;
+      }
+
+      const unsubUser = onSnapshot(doc(db, "users", user.uid), (snap) => {
+        if (snap.exists() && snap.data().college && snap.data().studentId) {
+          navigate("/Students");
+        }
+      });
+
+      return () => unsubUser();
+    });
+
+    return () => unsubAuth();
+  }, [auth, db, navigate]);
 
   const formatStudentId = (value: string): string => {
     const digits = value.replace(/\D/g, "");
@@ -59,10 +76,14 @@ const RegisterStudent = () => {
       const user = auth.currentUser;
       if (!user) throw new Error("No authenticated user found.");
 
-      await updateDoc(doc(db, "users", user.uid), {
-        college: selectedCollege,
-        studentId: studentId.trim(),
-      });
+      await setDoc(
+        doc(db, "users", user.uid),
+        {
+          college: selectedCollege,
+          studentId: studentId.trim(),
+        },
+        { merge: true },
+      );
 
       navigate("/Students");
     } catch (err) {
@@ -119,7 +140,14 @@ const RegisterStudent = () => {
       >
         {/* Header */}
         <div style={{ textAlign: "center" }}>
-          <h1 style={{ color: T.textHi, fontSize: 22, fontWeight: 700, marginBottom: 8 }}>
+          <h1
+            style={{
+              color: T.textHi,
+              fontSize: 22,
+              fontWeight: 700,
+              marginBottom: 8,
+            }}
+          >
             Welcome to NEU Library
           </h1>
           <p style={{ color: T.textLo, fontSize: 13 }}>
@@ -146,13 +174,21 @@ const RegisterStudent = () => {
           <select
             value={selectedCollege}
             onChange={(e) => setSelectedCollege(e.target.value)}
-            style={{ ...inputStyle, color: selectedCollege ? T.textHi : T.textLo, cursor: "pointer" }}
+            style={{
+              ...inputStyle,
+              color: selectedCollege ? T.textHi : T.textLo,
+              cursor: "pointer",
+            }}
           >
             <option value="" disabled>
-              {colleges.length === 0 ? "Loading colleges..." : "Select your college..."}
+              {colleges.length === 0
+                ? "Loading colleges..."
+                : "Select your college..."}
             </option>
             {colleges.map((c) => (
-              <option key={c} value={c}>{c}</option>
+              <option key={c} value={c}>
+                {c}
+              </option>
             ))}
           </select>
         </div>
