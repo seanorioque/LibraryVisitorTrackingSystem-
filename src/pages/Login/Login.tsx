@@ -7,99 +7,79 @@ import {
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import { ConstellationAnimation } from "./LoginAnimation";
 import Logo from "../../assets/newEraLogo.png";
-import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
-
-const ADMIN_UIDS: string[] = ["gYVxgeNkdkUa3qtT8pRiVmqPpKD3"];
+import ADMIN_UIDS from "../../constants/admin";
 
 const Login = () => {
   const auth = getAuth();
-  const navigate = useNavigate();
-  const [authing, setAuthing] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
   const db = getFirestore();
+  const navigate = useNavigate();
+  const [authing, setAuthing] = useState(false);
+  const [error, setError] = useState("");
 
   const signInWithGoogle = async () => {
-  setAuthing(true);
-  setError("");
+    setAuthing(true);
+    setError("");
 
-  const provider = new GoogleAuthProvider();
+    try {
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: "select_account" });
 
-  try {
-    provider.setCustomParameters({ prompt: "select_account" });
+      const response = await signInWithPopup(auth, provider);
+      const { user } = response;
 
-    const response = await signInWithPopup(auth, provider);
+      // ── Domain check (disabled for testing) ──
+      // const email = user.email ?? "";
+      // if (!email.endsWith("@neu.edu.ph")) {
+      //   await auth.currentUser?.delete();
+      //   await auth.signOut();
+      //   setError("Only @neu.edu.ph accounts are allowed.");
+      //   setAuthing(false);
+      //   return;
+      // }
 
-    // ✅ Domain check — must be @neu.edu.ph
-   // const email = response.user.email ?? "";
-    //if (!email.endsWith("@neu.edu.ph")) {
-     // await auth.currentUser?.delete(); // remove from Firebase Auth
-     // await auth.signOut();
-     // setError("Only @neu.edu.ph accounts are allowed. Please use your university email.");
-      //setAuthing(false);
-     // return;
-   // }
+      const isNewUser = getAdditionalUserInfo(response)?.isNewUser ?? false;
+      const isAdmin = ADMIN_UIDS.includes(user.uid);
 
-    const additionalUserInfo = getAdditionalUserInfo(response);
-    const isNewUser = additionalUserInfo?.isNewUser ?? false;
-    const isAdmin = ADMIN_UIDS.includes(response.user.uid);
+      // ── Check if blocked ──
+      const userSnap = await getDoc(doc(db, "users", user.uid));
+      if (userSnap.exists() && userSnap.data().status === "blocked") {
+        await auth.signOut();
+        setError(
+          `Your account has been blocked. Reason: ${
+            userSnap.data().blockReason ?? "Please contact the library admin."
+          }`
+        );
+        setAuthing(false);
+        return;
+      }
 
-    console.log("User UID:", response.user.uid);
-    console.log("isNewUser:", isNewUser);
-    console.log("isAdmin:", isAdmin);
+      // ── Create Firestore doc for new user ──
+      if (isNewUser) {
+        await setDoc(doc(db, "users", user.uid), {
+          uid: user.uid,
+          name: user.displayName,
+          email: user.email,
+          role: "student",
+          status: "active",
+          blockReason: null,
+          createdAt: new Date(),
+        });
+      }
 
-    // ✅ Check if user is blocked
-    const userRef = doc(db, "users", response.user.uid);
-    const userSnap = await getDoc(userRef);
+      // ── Check incomplete registration ──
+      const userData = userSnap.exists() ? userSnap.data() : null;
+      const isIncomplete = !isAdmin && !isNewUser && (!userData?.college || !userData?.studentId);
 
-    if (userSnap.exists() && userSnap.data().status === "blocked") {
-      await auth.signOut();
-      setError(
-        `Your account has been blocked. Reason: ${
-          userSnap.data().blockReason ?? "Please contact the library admin."
-        }`
-      );
+      const destination = isAdmin ? "/" : isNewUser || isIncomplete ? "/RegisterStudent" : "/Students";
+      navigate(destination);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
       setAuthing(false);
-      return;
     }
-
-    // ✅ Create Firestore document for new user
-    if (isNewUser) {
-      console.log("Reached setDoc");
-      await setDoc(doc(db, "users", response.user.uid), {
-        uid: response.user.uid,
-        name: response.user.displayName,
-        email: response.user.email,
-        role: "student",
-        status: "active",
-        blockReason: null,
-        createdAt: new Date(),
-      });
-      console.log("setDoc done");
-    }
-
-    // ✅ Check if registration is incomplete (missing college or studentId)
-    const userData = userSnap.exists() ? userSnap.data() : null;
-    const isIncomplete =
-      !isAdmin &&
-      !isNewUser &&
-      (!userData?.college || !userData?.studentId);
-
-    console.log("Reached navigate");
-    const destination = isAdmin
-      ? "/"
-      : isNewUser || isIncomplete
-      ? "/RegisterStudent"
-      : "/Students";
-    console.log("Navigating to:", destination);
-    navigate(destination);
-  } catch (err) {
-    console.error("ERROR:", err);
-    setError(err instanceof Error ? err.message : "An error occurred");
-    setAuthing(false);
-  }
-};
+  };
 
   return (
     <div className="w-full h-screen relative overflow-hidden">
@@ -138,10 +118,7 @@ const Login = () => {
             <p className="text-[10px] tracking-[0.22em] uppercase text-blue-300/50 font-mono mb-3">
               New Era University Library
             </p>
-            <h1
-              className="text-white text-2xl font-bold tracking-tight"
-              style={{ fontFamily: "Georgia, serif" }}
-            >
+            <h1 className="text-white text-2xl font-bold tracking-tight" style={{ fontFamily: "Georgia, serif" }}>
               Welcome
             </h1>
             <p className="mt-2 text-xs text-blue-200/40 font-mono tracking-wide">
