@@ -8,8 +8,7 @@ import PageBlocked from "./PageBlocked.tsx";
 import PageColleges from "./PageColleges.tsx";
 import PageReports from "./PageReport.tsx";
 import PageId from "../../types/PageId.ts";
-import Log from "../../types/Log.ts";
-import generateLogs from "../../mocks/generateLogs.ts";
+
 import NAV from "../../constants/nav.ts";
 import { PAGE_TITLES } from "../../constants/pages.ts";
 import PageLogs from "./PageLogs.tsx";
@@ -17,7 +16,6 @@ import { getAuth, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
 
-export const LOGS: Log[] = generateLogs();
 
 export default function App() {
   const auth = getAuth();

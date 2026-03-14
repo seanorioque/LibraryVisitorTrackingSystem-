@@ -13,7 +13,7 @@ import {
 } from "react-router-dom";
 import { initializeApp } from "firebase/app";
 import AuthRoute from "./hooks/AuthRoute.tsx";
-import { firebaseConfig } from "./services/firebase.ts";
+import { firebaseConfig } from "./firebase/firebase.ts";
 import Success from "./pages/Students/Success.tsx";
 
 initializeApp(firebaseConfig);

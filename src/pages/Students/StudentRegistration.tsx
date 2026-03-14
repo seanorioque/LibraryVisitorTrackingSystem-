@@ -1,24 +1,59 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getAuth } from "firebase/auth";
-import { getFirestore, doc, updateDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  collection,
+  onSnapshot,
+} from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import Colleges from "../../utils/College";
 import T from "../../utils/theme";
 
 const RegisterStudent = () => {
   const auth = getAuth();
   const db = getFirestore();
   const navigate = useNavigate();
-  const [selectedCollege, setSelectedCollege] = useState<string>("");
-  const [studentId, setStudentId] = useState<string>(""); // ← new
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
-  const formatStudentId = (value: string): string => {
-    // Strip everything except digits
-    const digits = value.replace(/\D/g, "");
 
-    // Apply format: 2-5-3 (e.g. 23-12883-625)
+  const [selectedCollege, setSelectedCollege] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [colleges, setColleges] = useState<string[]>([]);
+
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, "colleges"), (snap) => {
+      setColleges(
+        snap.docs
+          .map((d) => d.data().name as string)
+          .filter(Boolean)
+          .sort(),
+      );
+    });
+    return () => unsub();
+  }, [db]);
+  useEffect(() => {
+    const unsubAuth = auth.onAuthStateChanged((user) => {
+      if (!user) {
+        navigate("/login");
+        return;
+      }
+
+      const unsubUser = onSnapshot(doc(db, "users", user.uid), (snap) => {
+        if (snap.exists() && snap.data().college && snap.data().studentId) {
+          navigate("/Students");
+        }
+      });
+
+      return () => unsubUser();
+    });
+
+    return () => unsubAuth();
+  }, [auth, db, navigate]);
+
+  const formatStudentId = (value: string): string => {
+    const digits = value.replace(/\D/g, "");
     if (digits.length <= 2) return digits;
     if (digits.length <= 7) return `${digits.slice(0, 2)}-${digits.slice(2)}`;
     return `${digits.slice(0, 2)}-${digits.slice(2, 7)}-${digits.slice(7, 10)}`;
@@ -41,18 +76,40 @@ const RegisterStudent = () => {
       const user = auth.currentUser;
       if (!user) throw new Error("No authenticated user found.");
 
-      await updateDoc(doc(db, "users", user.uid), {
-        college: selectedCollege,
-        studentId: studentId.trim(), // ← save to Firestore
-      });
+      await setDoc(
+        doc(db, "users", user.uid),
+        {
+          college: selectedCollege,
+          studentId: studentId.trim(),
+        },
+        { merge: true },
+      );
 
       navigate("/Students");
     } catch (err) {
-      console.error(err);
       setError(err instanceof Error ? err.message : "An error occurred.");
       setLoading(false);
     }
   };
+
+  const inputStyle = {
+    background: T.elevated,
+    border: `1px solid ${T.border}`,
+    borderRadius: 8,
+    color: T.textHi,
+    fontSize: 13,
+    padding: "10px 14px",
+    outline: "none",
+    width: "100%",
+  };
+
+  const labelStyle = {
+    color: T.textLo,
+    fontSize: 12,
+    letterSpacing: "0.06em",
+    textTransform: "uppercase" as const,
+  };
+
   return (
     <div
       style={{
@@ -81,6 +138,7 @@ const RegisterStudent = () => {
           gap: 24,
         }}
       >
+        {/* Header */}
         <div style={{ textAlign: "center" }}>
           <h1
             style={{
@@ -97,83 +155,52 @@ const RegisterStudent = () => {
           </p>
         </div>
 
-        {/* ── Student ID ── */}
+        {/* Student ID */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <label
-            style={{
-              color: T.textLo,
-              fontSize: 12,
-              letterSpacing: "0.06em",
-              textTransform: "uppercase",
-            }}
-          >
-            Student ID Number
-          </label>
+          <label style={labelStyle}>Student ID Number</label>
           <input
             type="text"
             placeholder="e.g. 23-12883-625"
             value={studentId}
             onChange={(e) => setStudentId(formatStudentId(e.target.value))}
-            maxLength={13}
-            style={{
-              background: T.elevated,
-              border: `1px solid ${T.border}`,
-              borderRadius: 8,
-              color: T.textHi,
-              fontSize: 13,
-              padding: "10px 14px",
-              outline: "none",
-              width: "100%",
-            }}
+            maxLength={12}
+            style={inputStyle}
           />
         </div>
 
-        {/* ── College ── */}
+        {/* College */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <label
-            style={{
-              color: T.textLo,
-              fontSize: 12,
-              letterSpacing: "0.06em",
-              textTransform: "uppercase",
-            }}
-          >
-            College
-          </label>
+          <label style={labelStyle}>College</label>
           <select
             value={selectedCollege}
             onChange={(e) => setSelectedCollege(e.target.value)}
             style={{
-              background: T.elevated,
-              border: `1px solid ${T.border}`,
-              borderRadius: 8,
+              ...inputStyle,
               color: selectedCollege ? T.textHi : T.textLo,
-              fontSize: 13,
-              padding: "10px 14px",
-              outline: "none",
               cursor: "pointer",
-              width: "100%",
             }}
           >
             <option value="" disabled>
-              Select your college...
+              {colleges.length === 0
+                ? "Loading colleges..."
+                : "Select your college..."}
             </option>
-            {Colleges.map((college) => (
-              <option key={college} value={college}>
-                {college}
+            {colleges.map((c) => (
+              <option key={c} value={c}>
+                {c}
               </option>
             ))}
           </select>
         </div>
 
-        {/* ── Error ── */}
+        {/* Error */}
         {error && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             style={{
               background: T.red + "18",
-              border: `1px solid ${T.red + "44"}`,
+              border: `1px solid ${T.red}44`,
               borderRadius: 8,
               padding: "10px 14px",
               color: T.red,
@@ -185,7 +212,7 @@ const RegisterStudent = () => {
           </motion.div>
         )}
 
-        {/* ── Submit ── */}
+        {/* Submit */}
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}

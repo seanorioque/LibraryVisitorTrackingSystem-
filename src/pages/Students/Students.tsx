@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getAuth } from "firebase/auth";
 import {
   getFirestore,
@@ -6,11 +6,17 @@ import {
   addDoc,
   doc,
   getDoc,
+  getDocs,
+  query,
+  where,
+  Timestamp,
+  onSnapshot,
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import T from "../../utils/theme";
 import VISIT_REASONS from "../../types/ReasonsForVisit";
+import ADMIN_UIDS from "../../constants/admin";
 
 const Students = () => {
   const auth = getAuth();
@@ -21,6 +27,18 @@ const Students = () => {
   const [error, setError] = useState<string>("");
 
   const user = auth.currentUser;
+  useEffect(() => {
+    if (!user) return;
+    if (ADMIN_UIDS.includes(user.uid)) return; // ← skip for admin
+
+    const unsub = onSnapshot(doc(db, "users", user.uid), (snap) => {
+      if (snap.exists() && snap.data().status === "blocked") {
+        auth.signOut();
+        navigate("/login");
+      }
+    });
+    return () => unsub();
+  }, [user, db, auth, navigate]);
 
   const handleSubmit = async () => {
     if (!selectedReason) {
@@ -34,21 +52,48 @@ const Students = () => {
     try {
       if (!user) throw new Error("No authenticated user found.");
 
-      // Record the visit log in Firestore
+      // ── Check for duplicate visit today ──
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const todayEnd = new Date();
+      todayEnd.setHours(23, 59, 59, 999);
+
+      const dupeSnap = await getDocs(
+        query(
+          collection(db, "visits"),
+          where("uid", "==", user.uid),
+          where("timestamp", ">=", Timestamp.fromDate(todayStart)),
+          where("timestamp", "<=", Timestamp.fromDate(todayEnd)),
+        ),
+      );
+
+      if (!dupeSnap.empty) {
+        setError("You have already logged a visit today.");
+        setLoading(false);
+        setTimeout(() => navigate("/login"), 1000);
+        return;
+      }
+
+      // ── Fetch college + studentId ──
       const userDoc = await getDoc(doc(db, "users", user.uid));
       const college = userDoc.exists() ? userDoc.data().college : "Unknown";
-      const studentId = userDoc.exists() ? userDoc.data().studentId ?? "—" : "—"; // ← add
+      const studentId = userDoc.exists()
+        ? (userDoc.data().studentId ?? "—")
+        : "—";
 
+      // ── Save visit ──
+      const selected = VISIT_REASONS.find((r) => r.value === selectedReason);
       await addDoc(collection(db, "visits"), {
         uid: user.uid,
         name: user.displayName,
         email: user.email,
-        reason: selectedReason,
-        college, 
+        reason: selected?.label ?? selectedReason,
+        college,
         studentId,
         timestamp: new Date(),
       });
-      navigate("/success"); // ← redirect to success page after logging
+
+      navigate("/success");
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "An error occurred.");

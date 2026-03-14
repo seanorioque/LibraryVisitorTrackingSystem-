@@ -25,7 +25,7 @@ const PageBlocked = () => {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<User | null>(null);
 
-  // ── Realtime: only blocked users ──
+  // Realtime: only blocked users 
   useEffect(() => {
     const unsub = onSnapshot(
       query(collection(db, "users"), where("status", "==", "blocked")),
@@ -77,7 +77,7 @@ const PageBlocked = () => {
     return () => unsub();
   }, [db]);
 
-  // ── Unblock ──
+  // Unblock 
   const unblock = async (id: string) => {
     await updateDoc(doc(db, "users", id), {
       status: "active",
