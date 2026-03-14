@@ -1,3 +1,3 @@
-const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const DAYS = ["Sun","Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default DAYS;

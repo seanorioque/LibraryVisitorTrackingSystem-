@@ -337,7 +337,7 @@ export const PageDashboard = ({
                   borderRadius: 8,
                   color: T.textHi,
                 }}
-                labelFormatter={(label) => `🕐 ${label}`}
+                labelFormatter={(label) => ` ${label}`}
               />
               <Line
                 type="monotone"
