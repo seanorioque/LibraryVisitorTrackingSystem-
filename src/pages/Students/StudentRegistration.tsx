@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { getAuth } from "firebase/auth";
-import { getFirestore, doc, updateDoc, collection, onSnapshot,  } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  updateDoc,
+  collection,
+  onSnapshot,
+} from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import T from "../../utils/theme";
@@ -9,24 +15,23 @@ const RegisterStudent = () => {
   const auth = getAuth();
   const db = getFirestore();
   const navigate = useNavigate();
-  const [selectedCollege, setSelectedCollege] = useState<string>("");
-  const [studentId, setStudentId] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
-  const [colleges, setColleges] = useState<string[]>([]); // ← from Firestore
 
-  // ✅ Fetch colleges from Firestore in real time
+  const [selectedCollege, setSelectedCollege] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [colleges, setColleges] = useState<string[]>([]);
+
+  // ── Realtime: colleges ──
   useEffect(() => {
-    const unsub = onSnapshot(
-      collection(db, "colleges"),
-      (snap) => {
-        const names = snap.docs
+    const unsub = onSnapshot(collection(db, "colleges"), (snap) => {
+      setColleges(
+        snap.docs
           .map((d) => d.data().name as string)
           .filter(Boolean)
-          .sort();
-        setColleges(names);
-      }
-    );
+          .sort()
+      );
+    });
     return () => unsub();
   }, [db]);
 
@@ -61,10 +66,27 @@ const RegisterStudent = () => {
 
       navigate("/Students");
     } catch (err) {
-      console.error(err);
       setError(err instanceof Error ? err.message : "An error occurred.");
       setLoading(false);
     }
+  };
+
+  const inputStyle = {
+    background: T.elevated,
+    border: `1px solid ${T.border}`,
+    borderRadius: 8,
+    color: T.textHi,
+    fontSize: 13,
+    padding: "10px 14px",
+    outline: "none",
+    width: "100%",
+  };
+
+  const labelStyle = {
+    color: T.textLo,
+    fontSize: 12,
+    letterSpacing: "0.06em",
+    textTransform: "uppercase" as const,
   };
 
   return (
@@ -95,6 +117,7 @@ const RegisterStudent = () => {
           gap: 24,
         }}
       >
+        {/* Header */}
         <div style={{ textAlign: "center" }}>
           <h1 style={{ color: T.textHi, fontSize: 22, fontWeight: 700, marginBottom: 8 }}>
             Welcome to NEU Library
@@ -104,67 +127,44 @@ const RegisterStudent = () => {
           </p>
         </div>
 
-        {/* ── Student ID ── */}
+        {/* Student ID */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <label style={{ color: T.textLo, fontSize: 12, letterSpacing: "0.06em", textTransform: "uppercase" }}>
-            Student ID Number
-          </label>
+          <label style={labelStyle}>Student ID Number</label>
           <input
             type="text"
             placeholder="e.g. 23-12883-625"
             value={studentId}
             onChange={(e) => setStudentId(formatStudentId(e.target.value))}
             maxLength={12}
-            style={{
-              background: T.elevated,
-              border: `1px solid ${T.border}`,
-              borderRadius: 8,
-              color: T.textHi,
-              fontSize: 13,
-              padding: "10px 14px",
-              outline: "none",
-              width: "100%",
-            }}
+            style={inputStyle}
           />
         </div>
 
-        {/* ── College ── */}
+        {/* College */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <label style={{ color: T.textLo, fontSize: 12, letterSpacing: "0.06em", textTransform: "uppercase" }}>
-            College
-          </label>
+          <label style={labelStyle}>College</label>
           <select
             value={selectedCollege}
             onChange={(e) => setSelectedCollege(e.target.value)}
-            style={{
-              background: T.elevated,
-              border: `1px solid ${T.border}`,
-              borderRadius: 8,
-              color: selectedCollege ? T.textHi : T.textLo,
-              fontSize: 13,
-              padding: "10px 14px",
-              outline: "none",
-              cursor: "pointer",
-              width: "100%",
-            }}
+            style={{ ...inputStyle, color: selectedCollege ? T.textHi : T.textLo, cursor: "pointer" }}
           >
             <option value="" disabled>
               {colleges.length === 0 ? "Loading colleges..." : "Select your college..."}
             </option>
-            {colleges.map((college) => (
-              <option key={college} value={college}>{college}</option>
+            {colleges.map((c) => (
+              <option key={c} value={c}>{c}</option>
             ))}
           </select>
         </div>
 
-        {/* ── Error ── */}
+        {/* Error */}
         {error && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             style={{
               background: T.red + "18",
-              border: `1px solid ${T.red + "44"}`,
+              border: `1px solid ${T.red}44`,
               borderRadius: 8,
               padding: "10px 14px",
               color: T.red,
@@ -176,7 +176,7 @@ const RegisterStudent = () => {
           </motion.div>
         )}
 
-        {/* ── Submit ── */}
+        {/* Submit */}
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
