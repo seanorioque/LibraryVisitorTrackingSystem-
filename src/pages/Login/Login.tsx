@@ -3,77 +3,91 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
+  getAdditionalUserInfo,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import { ConstellationAnimation } from "./LoginAnimation";
 import Logo from "../../assets/newEraLogo.png";
-import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
-import { getAdditionalUserInfo } from "firebase/auth";
-
-const ADMIN_UIDS: string[] = ["gYVxgeNkdkUa3qtT8pRiVmqPpKD3"];
+import ADMIN_UIDS from "../../constants/admin";
 
 const Login = () => {
   const auth = getAuth();
-  const navigate = useNavigate();
-  const [authing, setAuthing] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
   const db = getFirestore();
+  const navigate = useNavigate();
+  const [authing, setAuthing] = useState(false);
+  const [error, setError] = useState("");
 
   const signInWithGoogle = async () => {
     setAuthing(true);
     setError("");
 
-    const provider = new GoogleAuthProvider();
-
     try {
+      const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: "select_account" });
 
       const response = await signInWithPopup(auth, provider);
-      const additionalUserInfo = getAdditionalUserInfo(response);
-      const isNewUser = additionalUserInfo?.isNewUser ?? false;
-      const isAdmin = ADMIN_UIDS.includes(response.user.uid);
+      const { user } = response;
 
-      console.log("User UID:", response.user.uid);
-      console.log("isNewUser:", isNewUser);
-      console.log("isAdmin:", isAdmin);
+      //── Domain check (disabled for testing) ──
+      const email = user.email ?? "";
+      if (!email.endsWith("@neu.edu.ph")) {
+        await auth.currentUser?.delete();
+        await auth.signOut();
+        setError("Only @neu.edu.ph accounts are allowed.");
+        setAuthing(false);
+        return;
+      }
 
-      // ✅ Check if user is blocked before allowing entry
-      const userRef = doc(db, "users", response.user.uid);
-      const userSnap = await getDoc(userRef);
+      const isNewUser = getAdditionalUserInfo(response)?.isNewUser ?? false;
+      const isAdmin = ADMIN_UIDS.includes(user.uid);
 
+      // ── Check if blocked ──
+      const userSnap = await getDoc(doc(db, "users", user.uid));
       if (userSnap.exists() && userSnap.data().status === "blocked") {
         await auth.signOut();
         setError(
           `Your account has been blocked. Reason: ${
             userSnap.data().blockReason ?? "Please contact the library admin."
-          }`
+          }`,
         );
         setAuthing(false);
-        return; // ← stop here, do not navigate
+        return;
       }
 
-      // ✅ Create Firestore document for new user
+      // ── Create full doc for new users ──
       if (isNewUser) {
-        console.log("Reached setDoc");
-        await setDoc(doc(db, "users", response.user.uid), {
-          uid: response.user.uid,
-          name: response.user.displayName,
-          email: response.user.email,
-          role: "student",
-          status: "active",      // ← always active on creation
-          blockReason: null,
-          createdAt: new Date(),
-        });
-        console.log("setDoc done");
+        await setDoc(
+          doc(db, "users", user.uid),
+          {
+            uid: user.uid,
+            role: "student",
+            name: user.displayName,
+            email: user.email,
+            status: "active",
+            blockReason: null,
+            college: null,
+            studentId: null,
+            createdAt: new Date(),
+          },
+          { merge: true },
+        );
       }
 
-      console.log("Reached navigate");
-      const destination = isAdmin ? "/" : isNewUser ? "/RegisterStudent" : "/Students";
-      console.log("Navigating to:", destination);
+      // ── Check incomplete registration ──
+      const latestSnap = await getDoc(doc(db, "users", user.uid));
+      const userData = latestSnap.exists() ? latestSnap.data() : null;
+      const isIncomplete =
+        !isAdmin && (!userData?.college || !userData?.studentId);
+
+      const destination = isAdmin
+        ? "/"
+        : isIncomplete
+          ? "/RegisterStudent"
+          : "/Students";
       navigate(destination);
     } catch (err) {
-      console.error("ERROR:", err);
       setError(err instanceof Error ? err.message : "An error occurred");
       setAuthing(false);
     }
@@ -127,7 +141,6 @@ const Login = () => {
             </p>
           </motion.div>
 
-          {/* ✅ Error message */}
           {error && (
             <motion.div
               initial={{ opacity: 0 }}

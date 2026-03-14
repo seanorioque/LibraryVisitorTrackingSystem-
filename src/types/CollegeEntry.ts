@@ -1,9 +1,6 @@
 interface CollegeEntry {
-  id: number;
   name: string;
-  departments: string[];
-  color: string;
   visitors: number;
-  active: boolean;
+  fill: string;
 }
-export default CollegeEntry;
+export default CollegeEntry

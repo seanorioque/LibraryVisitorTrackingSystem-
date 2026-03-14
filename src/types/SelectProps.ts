@@ -1,9 +1,9 @@
-
 import SelectOption from "./SelectOption";
 interface SelectProps {
   value: string;
-  onChange: (v: string) => void;
+  onChange: (value: string) => void;
   options: SelectOption[];
   style?: React.CSSProperties;
 }
-export default SelectProps;
+
+export default SelectProps

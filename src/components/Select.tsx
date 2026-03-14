@@ -1,4 +1,4 @@
-import SelectProps from "../types/SelectProps";
+import SelectProps from "../types/SelectProps"
 import T from "../utils/theme";
 export const Select = ({ value, onChange, options, style }: SelectProps) => (
   <select
