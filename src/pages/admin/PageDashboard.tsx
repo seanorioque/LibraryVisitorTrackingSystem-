@@ -19,7 +19,7 @@ import {
 } from "recharts";
 import T from "../../utils/theme.ts";
 import PageId from "../../types/PageId.ts";
-import { hourlyData, PIE_COLORS } from "../../constants/charts.ts";
+import { PIE_COLORS } from "../../constants/charts.ts";
 import StatCard from "../../components/StatCard.tsx";
 import Card from "../../components/Card.tsx";
 import { SectionTitle } from "../../components/SectionTitle.tsx";

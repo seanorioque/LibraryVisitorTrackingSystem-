@@ -15,17 +15,11 @@ import Input from "../../components/Input.tsx";
 import Modal from "../../components/Modal.tsx";
 import Card from "../../components/Card.tsx";
 import Btn from "../../components/Btn.tsx";
-
-interface CollegeEntry {
-  id: string;
-  name: string;
-  color: string;
-  visitors: number;
-}
+import CollegeRecord from "../../types/CollegeRecord.ts";
 
 const PageColleges = () => {
   const db = getFirestore();
-  const [colleges, setColleges] = useState<CollegeEntry[]>([]);
+  const [colleges, setColleges] = useState<CollegeRecord[]>([]);
   const [visitCounts, setVisitCounts] = useState<Record<string, number>>({});
 
   // ── Add College Modal ──
@@ -35,7 +29,7 @@ const PageColleges = () => {
   const [addError, setAddError] = useState("");
 
   // ── Delete Confirmation Modal ──
-  const [deleteTarget, setDeleteTarget] = useState<CollegeEntry | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<CollegeRecord | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   // ── Realtime: colleges collection ──
@@ -47,7 +41,7 @@ const PageColleges = () => {
           name: d.data().name ?? d.id,
           color: d.data().color ?? PIE_COLORS[i % PIE_COLORS.length],
           visitors: 0,
-        }))
+        })),
       );
     });
     return () => unsub();
@@ -73,7 +67,7 @@ const PageColleges = () => {
       return;
     }
     const isDuplicate = colleges.some(
-      (c) => c.name.toLowerCase() === newCollegeName.trim().toLowerCase()
+      (c) => c.name.toLowerCase() === newCollegeName.trim().toLowerCase(),
     );
     if (isDuplicate) {
       setAddError("This college already exists.");
@@ -113,10 +107,14 @@ const PageColleges = () => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-
       {/* ── Header ── */}
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        <Btn onClick={() => { setShowAddModal(true); setAddError(""); }}>
+        <Btn
+          onClick={() => {
+            setShowAddModal(true);
+            setAddError("");
+          }}
+        >
           + Add College
         </Btn>
       </div>
@@ -130,7 +128,14 @@ const PageColleges = () => {
         }}
       >
         {colleges.length === 0 ? (
-          <div style={{ color: T.textLo, fontSize: 13, textAlign: "center", padding: "40px 0" }}>
+          <div
+            style={{
+              color: T.textLo,
+              fontSize: 13,
+              textAlign: "center",
+              padding: "40px 0",
+            }}
+          >
             No colleges yet. Add one above.
           </div>
         ) : (
@@ -165,7 +170,9 @@ const PageColleges = () => {
                       {fmt(visitCounts[col.name] ?? 0)} visitors
                     </div>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: 8 }}
+                  >
                     <div
                       style={{
                         width: 10,
@@ -197,7 +204,10 @@ const PageColleges = () => {
               <Input
                 placeholder="College name..."
                 value={newCollegeName}
-                onChange={(v) => { setNewCollegeName(v); setAddError(""); }}
+                onChange={(v) => {
+                  setNewCollegeName(v);
+                  setAddError("");
+                }}
                 style={{ width: "100%" }}
               />
               {addError && (
@@ -214,7 +224,9 @@ const PageColleges = () => {
                   {addError}
                 </div>
               )}
-              <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+              <div
+                style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}
+              >
                 <Btn variant="ghost" onClick={() => setShowAddModal(false)}>
                   Cancel
                 </Btn>
@@ -233,10 +245,7 @@ const PageColleges = () => {
       {/* ── Delete Confirmation Modal ── */}
       <AnimatePresence>
         {deleteTarget && (
-          <Modal
-            title="Delete College?"
-            onClose={() => setDeleteTarget(null)}
-          >
+          <Modal title="Delete College?" onClose={() => setDeleteTarget(null)}>
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <p style={{ color: T.text, fontSize: 13 }}>
                 Are you sure you want to delete{" "}
@@ -245,7 +254,9 @@ const PageColleges = () => {
                 </span>
                 ? This action cannot be undone.
               </p>
-              <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+              <div
+                style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}
+              >
                 <Btn variant="ghost" onClick={() => setDeleteTarget(null)}>
                   Cancel
                 </Btn>
