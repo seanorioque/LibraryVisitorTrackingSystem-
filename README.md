@@ -31,11 +31,11 @@ By replacing manual logbooks, LVTS improves operational efficiency, provides dat
 | 👤 **User Management** | Search, filter, block/unblock users with reason tracking |
 | 📋 **Visit Logs** | View, filter, export, and delete invalid visit records |
 | 🚫 **Blocked Users** | Dedicated page for managing and reviewing blocked accounts |
-| 🏛️ **College & Department Management** | Flexible department configuration |
+| 🏛️ **College** | Flexible College configuration |
 | 📈 **Reports & Analytics** | Traffic charts, top visitors, visit reason breakdowns |
 | 📥 **Export** | Export logs and reports to Excel (CSV) |
-| 🖨️ **Print & Email** | Print reports or send summaries via email |
-| 🟢 **Real-Time Counter** | Live visitor count updated in real time |
+| 🖨️ **Print** | Print reports |
+
 
 ---
 
@@ -155,13 +155,6 @@ npm run preview
 
 ---
 
-## 📦 Available Scripts
 
-| Script | Description |
-|---|---|
-| `npm run dev` | Start the development server |
-| `npm run build` | Build the app for production |
-| `npm run preview` | Preview the production build locally |
-| `npm run lint` | Run ESLint checks |
 
 
