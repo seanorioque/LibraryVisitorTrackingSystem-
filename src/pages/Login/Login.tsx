@@ -30,15 +30,15 @@ const Login = () => {
       const response = await signInWithPopup(auth, provider);
       const { user } = response;
 
-      // ── Domain check (disabled for testing) ──
-      // const email = user.email ?? "";
-      // if (!email.endsWith("@neu.edu.ph")) {
-      //   await auth.currentUser?.delete();
-      //   await auth.signOut();
-      //   setError("Only @neu.edu.ph accounts are allowed.");
-      //   setAuthing(false);
-      //   return;
-      // }
+      //── Domain check (disabled for testing) ──
+      const email = user.email ?? "";
+      if (!email.endsWith("@neu.edu.ph")) {
+        await auth.currentUser?.delete();
+        await auth.signOut();
+        setError("Only @neu.edu.ph accounts are allowed.");
+        setAuthing(false);
+        return;
+      }
 
       const isNewUser = getAdditionalUserInfo(response)?.isNewUser ?? false;
       const isAdmin = ADMIN_UIDS.includes(user.uid);
@@ -55,8 +55,6 @@ const Login = () => {
         setAuthing(false);
         return;
       }
-
-
 
       // ── Create full doc for new users ──
       if (isNewUser) {
