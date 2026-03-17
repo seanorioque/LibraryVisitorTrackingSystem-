@@ -10,7 +10,8 @@ import { motion } from "framer-motion";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import { ConstellationAnimation } from "./LoginAnimation";
 import Logo from "../../assets/newEraLogo.png";
-import ADMIN_UIDS from "../../constants/admin";
+import {ADMIN_UIDS,ADMIN_EMAILS} from "../../admin";
+
 
 const Login = () => {
   const auth = getAuth();
@@ -41,7 +42,7 @@ const Login = () => {
       }
 
       const isNewUser = getAdditionalUserInfo(response)?.isNewUser ?? false;
-      const isAdmin = ADMIN_UIDS.includes(user.uid);
+      const isAdmin = ADMIN_UIDS.includes(user.uid) || ADMIN_EMAILS.includes(user.email ?? "");
 
       // ── Check if blocked ──
       const userSnap = await getDoc(doc(db, "users", user.uid));

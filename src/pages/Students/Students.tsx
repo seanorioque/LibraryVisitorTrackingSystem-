@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import T from "../../utils/theme";
 import VISIT_REASONS from "../../types/ReasonsForVisit";
-import ADMIN_UIDS from "../../constants/admin";
+import {ADMIN_UIDS,ADMIN_EMAILS} from "../../admin";
 
 const Students = () => {
   const auth = getAuth();
@@ -25,11 +25,11 @@ const Students = () => {
   const [selectedReason, setSelectedReason] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
-
+//const isAdmin = ADMIN_UIDS.includes(user.uid) && ADMIN_EMAILS.includes(user.email ?? "");
   const user = auth.currentUser;
   useEffect(() => {
     if (!user) return;
-    if (ADMIN_UIDS.includes(user.uid)) return; // ← skip for admin
+    if (ADMIN_UIDS.includes(user.uid) || ADMIN_EMAILS.includes(user.email ?? "")) return; // ← skip for admin
 
     const unsub = onSnapshot(doc(db, "users", user.uid), (snap) => {
       if (snap.exists() && snap.data().status === "blocked") {
