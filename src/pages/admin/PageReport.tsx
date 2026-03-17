@@ -16,8 +16,6 @@ import User from "../../types/User.ts";
 import { PIE_COLORS } from "../../constants/charts.ts";
 import { fmt } from "../../utils/format.ts";
 import EmailModal from "../../components/EmailModal.tsx";
-import TD from "../../components/TD.tsx";
-import Table from "../../components/Table.tsx";
 import Card from "../../components/Card.tsx";
 import { SectionTitle } from "../../components/SectionTitle.tsx";
 import Btn from "../../components/Btn.tsx";
@@ -37,7 +35,7 @@ const PageReports = () => {
   const [monthlyData, setMonthlyData] = useState<MonthlyEntry[]>([]);
   const [collegeData, setCollegeData] = useState<CollegeEntry[]>([]);
   const [reasonData, setReasonData] = useState<ReasonEntry[]>([]);
-  const [topVisitors, setTopVisitors] = useState<(User & { rank: number; visitCount: number; lastVisitDate: string })[]>([]);
+
 
   useEffect(() => {
     const unsub = onSnapshot(collection(db, "visits"), (snap) => {
@@ -109,21 +107,6 @@ const PageReports = () => {
       if (!latestMap[v.uid] || ts > latestMap[v.uid]) latestMap[v.uid] = ts;
     });
 
-    const ranked = users
-      .map((u) => ({
-        ...u,
-        visitCount: countMap[u.uid] ?? 0,
-        lastVisitDate: latestMap[u.uid]
-          ? new Date(latestMap[u.uid]).toLocaleDateString("en-US", {
-              month: "short", day: "numeric", year: "numeric",
-            })
-          : "No visits yet",
-      }))
-      .sort((a, b) => b.visitCount - a.visitCount)
-      .slice(0, 10)
-      .map((u, i) => ({ ...u, rank: i + 1 }));
-
-    setTopVisitors(ranked);
   }, [visits, users]);
 
   return (
@@ -218,29 +201,7 @@ const PageReports = () => {
           </Card>
         </div>
 
-        {/* ── Top Visitors Table ── */}
-        <Card style={{ marginTop: 16 }}>
-          <SectionTitle>Most Frequent Visitors</SectionTitle>
-          {topVisitors.length === 0 ? (
-            <div style={{ color: T.textLo, fontSize: 12, textAlign: "center", padding: "24px 0" }}>No data yet</div>
-          ) : (
-            <Table
-              columns={["Rank", "Name", "Email", "College", "Total Visits", "Last Visit"]}
-              data={topVisitors}
-              renderRow={(u) => (
-                <>
-                  <TD style={{ color: u.rank <= 3 ? T.yellow : T.textLo, fontWeight: 700 }}>#{u.rank}</TD>
-                  <TD style={{ color: T.textHi, fontWeight: 500 }}>{u.name}</TD>
-                  <TD style={{ fontSize: 11 }}>{u.email}</TD>
-                  <TD style={{ fontSize: 11 }}>{u.college?.replace("College of ", "") ?? "—"}</TD>
-                  <TD><span style={{ color: T.accent, fontWeight: 700 }}>{u.visitCount}</span></TD>
-                  <TD style={{ fontSize: 11 }}>{u.lastVisitDate}</TD>
-                </>
-              )}
-            />
-          )}
-        </Card>
-
+      
       </div>{/* ← end print-reports-charts */}
 
       {/* ── Email Modal ── */}
