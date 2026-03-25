@@ -158,5 +158,10 @@ npm run preview
 
 [Library Visitor Tracking System ](https://library-visitor-tracking-system.vercel.app/)
 
+## LVTS User Guide
+
+[User Guide](https://docs.google.com/document/d/1nAVg05ozvCObI4ZLVSl_b5D6uS_obwJilRpRgtvuZyY/edit?usp=sharing)
+
+
 
 
